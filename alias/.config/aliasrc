@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Use neovim for vim if present.
+[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
+
+# Verbose
+# Verbosity and settings that you pretty much just always are going to want.
+alias \
+	cp="cp -iv" \
+	mv="mv -iv" \
+	rm="rm -vI" \
+	mkd="mkdir -pv"
+
+# shortcuts
+alias \
+  d="cd ~/Downloads" \
+  D="cd ~/Documents" \
+  p="cd ~/Pictures"
+
+# Dotfiles config
+alias config='/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME'
