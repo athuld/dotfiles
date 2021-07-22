@@ -8,7 +8,8 @@ gotop
 heroku-cli-bin
 insomnia-bin
 libxft-bgra
-lightdm-webkit-theme-aether
+lightdm-settings
+lightdm-slick-greeter
 mongodb-bin
 mongodb-compass
 mongodb-tools-bin
@@ -17,11 +18,13 @@ neovim-git
 neovim-suda-opt-git
 nerd-fonts-cascadia-code
 nerd-fonts-fira-code
+nerd-fonts-jetbrains-mono
 nerd-fonts-meslo
 nordic-darker-theme
 p7zip-gui
 paper-icon-theme-git
 picom-ibhagwan-git
+python-ueberzug-git
 spicetify-cli
 spotify
 spotify-tray-git

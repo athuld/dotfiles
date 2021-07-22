@@ -14,6 +14,7 @@ bluez-tools
 bluez-utils
 chromium
 cups
+dnsmasq
 dosfstools
 dunst
 fakeroot
@@ -31,20 +32,23 @@ github-cli
 gnome-bluetooth
 groff
 grub
+grub-customizer
 gvfs-mtp
 htop
 intel-ucode
+iptables-nft
+lazygit
 libreoffice-fresh
 libtool
+libvirt
 lightdm
-lightdm-gtk-greeter
-lightdm-webkit2-greeter
 linux
 linux-firmware
 linux-headers
 lsd
 lsof
 lxappearance
+lxsession
 m4
 maim
 make
@@ -62,6 +66,7 @@ noto-fonts-emoji
 npm
 ntfs-3g
 ntp
+numlockx
 os-prober
 p7zip
 pamixer
@@ -78,6 +83,7 @@ powertop
 pulsemixer
 python-lxml
 python-pip
+qemu
 ranger
 redshift
 reflector
@@ -100,6 +106,7 @@ unzip
 usbutils
 vi
 vim
+virt-manager
 vlc
 wget
 which
