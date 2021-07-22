@@ -23,7 +23,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'nvim-lua/popup.nvim'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
-    Plug 'francoiscabrol/ranger.vim'
+    Plug 'kevinhwang91/rnvimr', {'do': 'make sync'}
     Plug 'rbgrouleff/bclose.vim'
     Plug 'neovim/nvim-lspconfig'
     Plug 'hrsh7th/nvim-compe'
@@ -178,9 +178,6 @@ au VimLeave * set guicursor=a:ver1
 " Leader key
 let mapleader=" "
 
-" Show hidden files in ranger
-let g:ranger_command_override = 'ranger --cmd "set show_hidden=true"'
-
 " Find files using Telescope command-line sugar.
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
@@ -193,9 +190,14 @@ noremap <leader>j :BufferPrevious<CR>
 noremap <leader>k :BufferNext<CR>
 noremap <leader>d :BufferClose<CR>
 
+" Ranger Fil Manager 
+" Make Ranger replace netrw and be the file explorer
+let g:rnvimr_ex_enable = 1
+" Make Ranger to be hidden after picking a file
+let g:rnvimr_enable_picker = 1
 
-" Ranger File Manager
-map <leader>e :RangerNewTab<CR>
+nmap <space>e :RnvimrToggle<CR>
+
 
 " NERDTree
 nnoremap <leader>n :NERDTreeToggle<CR>
