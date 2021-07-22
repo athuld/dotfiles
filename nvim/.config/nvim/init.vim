@@ -31,6 +31,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
     Plug 'gennaro-tedesco/nvim-commaround'
+    Plug 'mhinz/vim-signify'
+    Plug 'voldikss/vim-floaterm'
 call plug#end()
 
 syntax on
@@ -46,6 +48,9 @@ require('lualine').setup{
 options = {theme = 'onedark',
   section_separators = {'', ''},
   component_separators = {'', ''}
+},
+sections={ 
+lualine_c = {'diff','filename'},
 }
 }
 
@@ -214,3 +219,26 @@ nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 " Comments
 vmap <leader>/ <Plug>ToggleCommaround
+
+" Vim Signify
+let g:signify_sign_add               = '▎'
+let g:signify_sign_delete            = '▎'
+let g:signify_sign_change            = '▎'
+
+" Floaterm 
+let g:floaterm_keymap_toggle = '<F1>'
+let g:floaterm_keymap_next   = '<F2>'
+let g:floaterm_keymap_prev   = '<F3>'
+let g:floaterm_keymap_new    = '<F4>'
+let g:floaterm_keymap_kill   = '<leader><leader>d'
+
+let g:floaterm_gitcommit='floaterm'
+let g:floaterm_autoinsert=1
+let g:floaterm_width=0.8
+let g:floaterm_height=0.8
+let g:floaterm_wintitle=0
+let g:floaterm_autoclose=1
+" Open up lazygit
+nnoremap <leader>fg :FloatermNew lazygit<CR>
+" Open up gotop
+nnoremap <leader>fgt :FloatermNew gotop<CR>
