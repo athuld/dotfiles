@@ -30,7 +30,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'gennaro-tedesco/nvim-commaround'
+    Plug 'tpope/vim-commentary'
     Plug 'mhinz/vim-signify'
     Plug 'voldikss/vim-floaterm'
     Plug 'neoclide/vim-jsx-improve'
@@ -38,6 +38,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-surround'
     Plug 'SirVer/ultisnips'
     Plug 'mlaursen/vim-react-snippets'
+    Plug 'lambdalisue/suda.vim'
+    Plug 'mhartington/formatter.nvim'
+    Plug 'glepnir/lspsaga.nvim'
+    Plug 'mattn/emmet-vim'
+    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 call plug#end()
 
 syntax on
@@ -47,6 +52,18 @@ colorscheme onedark
 " Lua Configs
 
 lua << EOF
+local cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
+local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
+local g = vim.g -- a table to access global variables
+local opt = vim.opt -- to set options
+
+local function map(mode, lhs, rhs, opts)
+  local options = {noremap = true}
+  if opts then
+    options = vim.tbl_extend("force", options, opts)
+  end
+  vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+end
 
 --- Statusline : Lualine
 require('lualine').setup{
@@ -161,6 +178,110 @@ require'nvim-treesitter.configs'.setup {
 local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
 parser_config.tsx.used_by = { "javascript", "typescript.tsx" }
 
+-- LSP this is needed for LSP completions in CSS along with the snippets plugin
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.resolveSupport = {
+  properties = {
+    "documentation",
+    "detail",
+    "additionalTextEdits"
+  }
+}
+
+-- LSP Server config
+require "lspconfig".cssls.setup(
+  {
+    cmd = {"vscode-css-language-server", "--stdio"},
+    capabilities = capabilities,
+    settings = {
+      scss = {
+        lint = {
+          idSelector = "warning",
+          zeroUnits = "warning",
+          duplicateProperties = "warning"
+        },
+        completion = {
+          completePropertyWithSemicolon = true,
+          triggerPropertyValueCompletion = true
+        }
+      }
+    }
+  }
+)
+require "lspconfig".tsserver.setup {}
+
+-- LSP Prevents inline buffer annotations
+vim.lsp.diagnostic.show_line_diagnostics()
+vim.lsp.handlers["textDocument/publishDiagnostics"] =
+  vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics,
+  {
+    virtual_text = false
+  }
+)
+
+-- LSP Saga config & keys https://github.com/glepnir/lspsaga.nvim
+local saga = require "lspsaga"
+saga.init_lsp_saga {
+  code_action_icon = " ",
+  definition_preview_icon = "  ",
+  dianostic_header_icon = "   ",
+  error_sign = " ",
+  finder_definition_icon = "  ",
+  finder_reference_icon = "  ",
+  hint_sign = "⚡",
+  infor_sign = "",
+  warn_sign = ""
+}
+
+map("n", "<Leader>cf", ":Lspsaga lsp_finder<CR>", {silent = true})
+map("n", "<leader>ca", ":Lspsaga code_action<CR>", {silent = true})
+map("v", "<leader>ca", ":<C-U>Lspsaga range_code_action<CR>", {silent = true})
+map("n", "<leader>ch", ":Lspsaga hover_doc<CR>", {silent = true})
+map("n", "<leader>ck", '<cmd>lua require("lspsaga.action").smart_scroll_with_saga(-1)<CR>', {silent = true})
+map("n", "<leader>cj", '<cmd>lua require("lspsaga.action").smart_scroll_with_saga(1)<CR>', {silent = true})
+map("n", "<leader>cs", ":Lspsaga signature_help<CR>", {silent = true})
+map("n", "<leader>ci", ":Lspsaga show_line_diagnostics<CR>", {silent = true})
+map("n", "<leader>cn", ":Lspsaga diagnostic_jump_next<CR>", {silent = true})
+map("n", "<leader>cp", ":Lspsaga diagnostic_jump_prev<CR>", {silent = true})
+map("n", "<leader>cr", ":Lspsaga rename<CR>", {silent = true})
+map("n", "<leader>cd", ":Lspsaga preview_definition<CR>", {silent = true})
+
+
+-- Prettier function for formatter
+local prettier = function()
+  return {
+    exe = "prettier",
+    args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), "--double-quote"},
+    stdin = true
+  }
+end
+
+require("formatter").setup(
+  {
+    logging = false,
+    filetype = {
+      javascript = {prettier},
+      typescript = {prettier},
+      html = {prettier},
+      css = {prettier},
+      scss = {prettier},
+      markdown = {prettier},
+    }
+  }
+)
+
+-- Runs Formatter on save
+vim.api.nvim_exec(
+  [[
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost *.js,*.ts,*.css,*.scss,*.md,*.html,*.lua : FormatWrite
+augroup END
+]],
+  true
+)
 EOF
 
 "--------------------------------------
@@ -223,7 +344,7 @@ nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 " Comments
-vmap <leader>/ <Plug>ToggleCommaround
+map <C-_> gc
 
 " Vim Signify
 let g:signify_sign_add               = '▎'
@@ -291,4 +412,15 @@ let g:closetag_shortcut = '>'
 
 " Add > at current position without closing the current tag, default is ''
 "
-let g:closetag_close_shortcut = '<leader>>'
+let g:closetag_close_shortcut = '<C-]>'
+
+" Emmet
+let g:user_emmet_leader_key='<C-l>'
+let g:user_emmet_settings = {
+\  'javascript' : {
+\      'extends' : 'jsx',
+\  },
+\}
+
+" Deoplete
+let g:deoplete#enable_at_startup = 1
