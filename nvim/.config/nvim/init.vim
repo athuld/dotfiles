@@ -12,7 +12,8 @@ set mouse=nv
 
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
-    Plug 'joshdick/onedark.vim'   
+    " Plug 'joshdick/onedark.vim'   
+    Plug 'sainnhe/everforest'
     Plug 'preservim/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'ap/vim-css-color'
@@ -30,6 +31,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+    Plug 'junegunn/rainbow_parentheses.vim'
     Plug 'tpope/vim-commentary'
     Plug 'mhinz/vim-signify'
     Plug 'voldikss/vim-floaterm'
@@ -46,7 +48,15 @@ call plug#begin('~/.vim/plugged')
 call plug#end()
 
 syntax on
-colorscheme onedark
+" colorscheme onedark
+set background=dark
+colorscheme everforest
+let g:everforest_background = 'hard'
+let g:everforest_diagnostic_text_highlight = 1
+let g:everforest_diagnostic_line_highlight = 1
+let g:everforest_enable_italic = 1
+let g:everforest_diagnostic_virtual_text = 'colored'
+let g:everforest_better_performance = 1
 
 "------------------------------------
 " Lua Configs
@@ -67,7 +77,7 @@ end
 
 --- Statusline : Lualine
 require('lualine').setup{
-options = {theme = 'onedark',
+options = {theme = 'everforest',
   section_separators = {'', ''},
   component_separators = {'', ''}
 },
@@ -171,7 +181,8 @@ require'nvim-treesitter.configs'.setup {
     "json",
     "html",
     "scss",
-    "bash"
+    "bash",
+    "python"
   },
 }
 
@@ -316,9 +327,8 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " Switching Buffers
-noremap <tab> :BufferPrevious<CR>
-noremap <leader>j :BufferPrevious<CR>
-noremap <leader>k :BufferNext<CR>
+nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
+nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 noremap <leader>d :BufferClose<CR>
 
 " Ranger Fil Manager 
@@ -424,3 +434,14 @@ let g:user_emmet_settings = {
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
+
+
+" Vim signify
+" default updatetime 4000ms is not good for async update
+set updatetime=2000
+
+" Rainbow
+let g:rainbow#max_level = 16
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+
+autocmd FileType * RainbowParentheses
