@@ -45,6 +45,9 @@ call plug#begin('~/.vim/plugged')
     Plug 'glepnir/lspsaga.nvim'
     Plug 'mattn/emmet-vim'
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'mfussenegger/nvim-jdtls'
+    Plug 'RishabhRD/popfix'
+    Plug 'RishabhRD/nvim-lsputils'
 call plug#end()
 
 syntax on
@@ -313,6 +316,14 @@ augroup END
 
 
 au VimLeave * set guicursor=a:ver1
+
+
+if has('nvim-0.5')
+  augroup lsp
+    au!
+    au FileType java lua require'jdtls_config'.setup()
+  augroup end
+endif
 
 "------------------------------------
 " Mappings
