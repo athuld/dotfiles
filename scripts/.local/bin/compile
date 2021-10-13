@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# compile the java file
+javac $1
+
+# get the filename without extension
+fileName=$(basename $1 .java)
+
+# execute it !
+java $fileName
+
+# remove all the class files for cleanup purpose
+if [ -f *.class ];then
+    rm *.class
+fi

@@ -1,0 +1,152 @@
+#/bin/bash
+COMP=$HOME/Downloads/Compressed
+OTH=$HOME/Downloads/Others
+VID=$HOME/Downloads/Videos
+AUD=$HOME/Downloads/Audios
+TOR=$HOME/Downloads/Torrents
+TEMP=$HOME/.tempdown
+ch="y"
+mkdir -p {$COMP,$OTH,$VID,$TOR,$AUD,$TEMP}
+gdrive() {
+	echo -ne "\nDoes the link requires authentication? [ Y/n  ]"
+	read ch
+	case $ch in
+	"Y" | "y")
+		gdl -aria --aria-flags '-j 3 -x 3 -s 3 -k 1M' "$1" -o
+		;;
+	"N" | "n")
+		gdl "$1"
+		;;
+	*)
+		echo "Invalid Input"
+		gdrive $1
+		;;
+	esac
+}
+
+ytube() {
+	echo -e "\nSelect the Download Mode"
+	echo -e "\n============================================================================================================================="
+	echo -e "\n1.Manual(Select the desired Format)\t2.Video(BestVideo+BestAudio)\t3.Audio-only\t4.Playlist"
+	echo -e "\n============================================================================================================================="
+	echo -n ">"
+	read ytch
+	case $ytch in
+	1)
+		yt-dlp -F --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		echo -e "\n Choose your desired format and enter the corresponding format code below"
+		echo -n -e "\n Fomat Code:"
+		read ytfor
+		yt-dlp -f $ytfor --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		;;
+	2)
+		yt-dlp --no-playlist --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		;;
+	3)
+		cd $YTUBEA
+		echo -e "\nChoose the Format (can also downloads playlist)"
+		echo -e "\n#####################################################"
+		echo -e "1.best 2.aac 3.flac 4.m4a 5.mp3 6.opus 7.vorbis 8.wav"
+		echo -e "######################################################"
+		echo -n -e "\n>"
+		read ytaf
+		case $ytaf in
+		1)
+			yt-dlp -c -i --extract-audio --audio-format best $1
+			;;
+		2)
+			yt-dlp -c -i --extract-audio --audio-format aac $1
+			;;
+		3)
+			yt-dlp -c -i --extract-audio --audio-format flac $1
+			;;
+		4)
+			yt-dlp -c -i --extract-audio --audio-format m4a $1
+			;;
+		5)
+			yt-dlp -c -i --extract-audio --audio-format mp3 $1
+			;;
+		6)
+			yt-dlp -c -i --extract-audio --audio-format opus $1
+			;;
+		7)
+			yt-dlp -c -i--extract-audio --audio-format vorbis $1
+			;;
+		8)
+			yt-dlp -c -i --extract-audio --audio-format wav $1
+			;;
+		*)
+			echo -e "\nInvalid Option"
+			;;
+		esac
+		;;
+	4)
+		yt-dlp -c -i--yes-playlist --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		;;
+	*)
+		echo -e "\nInvalid Option"
+		;;
+	esac
+}
+
+cleanup() {
+
+	mv {*.aac,*.flac,*.m4a,*.mp3,*.opus,*.vorbis,*.wav} $AUD &>/dev/null
+	mv {*.mp4,*.mov,*.wmv,*.flv,*.avi,*.avchd,*.mkv,*.webm} $VID &>/dev/null
+	mv {*.zip,*.tar*,*.rar,*.7z,} $COMP &>/dev/null
+	find $TEMP -type f ! -name ""*.part*"" -exec mv {} $OTH \;
+
+}
+
+choice() {
+	notify-send "Download Finished !!" --icon=/home/athul/.spotify-img/download.png
+	echo "Download another file?[Y/n]"
+	read ch
+	case $ch in
+	"y" | "Y")
+		main
+		;;
+	"n" | "N")
+		exit
+		;;
+	*)
+		echo "Invalid choice"
+		choice
+		;;
+	esac
+}
+
+main() {
+	clear
+	figlet Downloader
+	cd $TEMP
+	echo -e "\nEnter the links:"
+	read -e link
+	if [[ $link = -v* ]]; then
+		link=$(sed 's|-v||g' <<<$link)
+		yt-dlp -c -i --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $link
+	else
+		read -ra urls <<<"$link"
+		for url in "${urls[@]}"; do
+			case $url in
+			*"drive.google"*)
+				gdrive "$url"
+				;;
+			*"youtu"*)
+				ytube "$url"
+				;;
+			*"magnet:?"*)
+				aria2c $url -d $TOR
+				;;
+			*)
+				aria2c -c -j 3 -x 3 -s 3 -k 1M --summary-interval=0 $url
+				;;
+			esac
+		done
+	fi
+
+	cleanup
+	choice
+}
+
+main

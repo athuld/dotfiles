@@ -21,7 +21,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'preservim/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'ap/vim-css-color'
-    Plug 'steelsojka/pears.nvim'
+    " Plug 'steelsojka/pears.nvim'
+    Plug 'windwp/nvim-autopairs'
     Plug 'romgrk/barbar.nvim'
     Plug 'ryanoasis/vim-devicons'
     Plug 'kyazdani42/nvim-web-devicons'
@@ -94,7 +95,9 @@ lualine_c = {'diff','filename'},
 }
 
 --- Auto Pairs
-require "pears".setup()
+require('nvim-autopairs').setup({
+  enable_check_bracket_line = false
+})
 
 --- Autocomplete with nvim lsp
 vim.o.completeopt = "menuone,noselect"
@@ -322,12 +325,10 @@ augroup END
 au VimLeave * set guicursor=a:ver1
 
 
-if has('nvim-0.5')
   augroup lsp
     au!
     au FileType java lua require'jdtls_config'.setup()
   augroup end
-endif
 
 "------------------------------------
 " Mappings
@@ -482,3 +483,13 @@ inoremap <C-j> <esc>:m .+1<CR>==
 inoremap <C-k> <esc>:m .-2<CR>==
 nnoremap <leader>j :m .+1<CR>==
 nnoremap <leader>k :m .-2<CR>==
+
+" function to delete trailing space after an abbreviation
+	func Eatchar(pat)
+    	let c = nr2char(getchar(0))
+        return (c =~ a:pat) ? '' : c
+endfunc
+
+" abbreviations
+iabbr sout System.out.println(<Right>;<Left><Left><c-r>=Eatchar('\m\s\<bar>/')<cr>
+iabbr jmain public static void main(String[] args){}<Left><Return>

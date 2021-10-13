@@ -2,6 +2,7 @@ accountsservice
 adapta-gtk-theme
 alsa-utils
 android-file-transfer
+android-udev
 arc-gtk-theme
 aria2
 autoconf
@@ -14,6 +15,7 @@ bluez-tools
 bluez-utils
 chromium
 cups
+discord
 dnsmasq
 dosfstools
 dunst
@@ -27,6 +29,7 @@ fzf
 gcc
 gedit
 gedit-plugins
+gimp
 git
 github-cli
 gnome-bluetooth
@@ -37,11 +40,13 @@ gvfs-mtp
 htop
 intel-ucode
 iptables-nft
+jdk8-openjdk
 lazygit
 libreoffice-fresh
 libtool
 libvirt
 lightdm
+lightdm-slick-greeter
 linux
 linux-firmware
 linux-headers
@@ -60,13 +65,17 @@ nemo
 neofetch
 network-manager-applet
 networkmanager
+networkmanager-openvpn
 nitrogen
 nodejs
+noto-fonts
 noto-fonts-emoji
 npm
 ntfs-3g
 ntp
 numlockx
+openresolv
+openvpn
 os-prober
 p7zip
 pamixer
@@ -74,6 +83,7 @@ papirus-icon-theme
 patch
 pavucontrol
 pcmanfm
+perl-crypt-cbc
 pipewire-media-session
 pipewire-pulse
 pkgconf
@@ -83,11 +93,13 @@ powertop
 pulsemixer
 python-lxml
 python-pip
+qbittorrent
 qemu
 ranger
 redshift
 reflector
 ripgrep
+rsync
 rust
 samba
 stow
@@ -112,7 +124,6 @@ wget
 which
 wireless_tools
 wpa_supplicant
-xarchiver
 xcape
 xclip
 xdg-user-dirs
@@ -167,7 +178,6 @@ xorg-xwd
 xorg-xwininfo
 xorg-xwud
 xsel
-youtube-dl
 zenity
 zip
 zsh

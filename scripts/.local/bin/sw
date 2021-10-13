@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CONFIG="/home/athul/.config/gh"
+
+cp $CONFIG/hosts.yml $CONFIG/hostTemp.yml
+mv $CONFIG/hostOther.yml $CONFIG/hosts.yml
+mv $CONFIG/hostTemp.yml $CONFIG/hostOther.yml
+
+echo "Switched to : "
+grep user $CONFIG/hosts.yml
