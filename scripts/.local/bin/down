@@ -33,14 +33,14 @@ ytube() {
 	read ytch
 	case $ytch in
 	1)
-		yt-dlp -F --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		yt-dlp -F --external-downloader aria2c  $1
 		echo -e "\n Choose your desired format and enter the corresponding format code below"
 		echo -n -e "\n Fomat Code:"
 		read ytfor
-		yt-dlp -f $ytfor --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		yt-dlp -f $ytfor --external-downloader aria2c $1
 		;;
 	2)
-		yt-dlp --no-playlist --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		yt-dlp --no-playlist --external-downloader aria2c  $1
 		;;
 	3)
 		cd $YTUBEA
@@ -81,7 +81,7 @@ ytube() {
 		esac
 		;;
 	4)
-		yt-dlp -c -i--yes-playlist --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $1
+		yt-dlp -c -i --yes-playlist --external-downloader aria2c  $1
 		;;
 	*)
 		echo -e "\nInvalid Option"
