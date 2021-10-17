@@ -27,7 +27,7 @@ gdrive() {
 ytube() {
 	echo -e "\nSelect the Download Mode"
 	echo -e "\n============================================================================================================================="
-	echo -e "\n1.Manual(Select the desired Format)\t2.Video(BestVideo+BestAudio)\t3.Audio-only\t4.Playlist"
+	echo -e "\n1. Manual(Select the desired Format)\t2. Video(BestVideo+BestAudio)\t3. Audio-only\t4. Playlist"
 	echo -e "\n============================================================================================================================="
 	echo -n ">"
 	read ytch
@@ -37,10 +37,10 @@ ytube() {
 		echo -e "\n Choose your desired format and enter the corresponding format code below"
 		echo -n -e "\n Fomat Code:"
 		read ytfor
-		yt-dlp -f $ytfor --external-downloader aria2c $1
+		yt-dlp -f $ytfor+ba[ext=m4a] --embed-metadata --embed-subs --external-downloader aria2c -o '%(title)s.%(ext)s' $1
 		;;
 	2)
-		yt-dlp --no-playlist --external-downloader aria2c  $1
+		yt-dlp --no-playlist --embed-metadata --embed-subs --external-downloader -o '%(title)s.%(ext)s' aria2c  $1
 		;;
 	3)
 		cd $YTUBEA
@@ -52,28 +52,28 @@ ytube() {
 		read ytaf
 		case $ytaf in
 		1)
-			yt-dlp -c -i --extract-audio --audio-format best $1
+			yt-dlp -c -i --extract-audio --audio-format best -o '%(title)s.%(ext)s' $1
 			;;
 		2)
-			yt-dlp -c -i --extract-audio --audio-format aac $1
+			yt-dlp -c -i --extract-audio --audio-format aac -o '%(title)s.%(ext)s' $1
 			;;
 		3)
-			yt-dlp -c -i --extract-audio --audio-format flac $1
+			yt-dlp -c -i --extract-audio --audio-format flac -o '%(title)s.%(ext)s' $1
 			;;
 		4)
-			yt-dlp -c -i --extract-audio --audio-format m4a $1
+			yt-dlp -c -i --extract-audio --audio-format m4a -o '%(title)s.%(ext)s' $1
 			;;
 		5)
-			yt-dlp -c -i --extract-audio --audio-format mp3 $1
+			yt-dlp -c -i --extract-audio --audio-format mp3 -o '%(title)s.%(ext)s' $1
 			;;
 		6)
-			yt-dlp -c -i --extract-audio --audio-format opus $1
+			yt-dlp -c -i --extract-audio --audio-format opus -o '%(title)s.%(ext)s' $1
 			;;
 		7)
-			yt-dlp -c -i--extract-audio --audio-format vorbis $1
+			yt-dlp -c -i--extract-audio --audio-format vorbis -o '%(title)s.%(ext)s' $1
 			;;
 		8)
-			yt-dlp -c -i --extract-audio --audio-format wav $1
+			yt-dlp -c -i --extract-audio --audio-format wav -o '%(title)s.%(ext)s' $1
 			;;
 		*)
 			echo -e "\nInvalid Option"
@@ -81,7 +81,7 @@ ytube() {
 		esac
 		;;
 	4)
-		yt-dlp -c -i --yes-playlist --external-downloader aria2c  $1
+		yt-dlp -c -i --yes-playlist -f 'bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b' --embed-metadata --embed-subs --external-downloader aria2c -P '~/Downloads/Videos' -o '%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s' $1
 		;;
 	*)
 		echo -e "\nInvalid Option"
@@ -95,6 +95,7 @@ cleanup() {
 	mv {*.mp4,*.mov,*.wmv,*.flv,*.avi,*.avchd,*.mkv,*.webm} $VID &>/dev/null
 	mv {*.zip,*.tar*,*.rar,*.7z,} $COMP &>/dev/null
 	find $TEMP -type f ! -name ""*.part*"" -exec mv {} $OTH \;
+    rm -f *Frag*
 
 }
 
@@ -124,7 +125,7 @@ main() {
 	read -e link
 	if [[ $link = -v* ]]; then
 		link=$(sed 's|-v||g' <<<$link)
-		yt-dlp -c -i --external-downloader aria2c --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $link
+		yt-dlp -c -i --external-downloader aria2c --hls-prefer-ffmpeg --external-downloader-args '-c -j 3 -x 3 -s 3 -k 1M --summary-interval=0' $link
 	else
 		read -ra urls <<<"$link"
 		for url in "${urls[@]}"; do
