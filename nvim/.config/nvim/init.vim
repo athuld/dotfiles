@@ -33,6 +33,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
+    Plug 'onsails/lspkind-nvim'
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -147,6 +148,12 @@ vim.o.completeopt = "menuone,noselect"
   -- Setup lspconfig.
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+local lspkind = require('lspkind')
+cmp.setup {
+  formatting = {
+    format = lspkind.cmp_format(),
+  },
+}
 
 ---Nvim Treesitter
 require'nvim-treesitter.configs'.setup {
@@ -256,6 +263,30 @@ augroup END
 ]],
   true
 )
+
+-- Telescope
+function telescope_buffer_dir()
+  return vim.fn.expand('%:p:h')
+end
+
+local telescope = require('telescope')
+local actions = require('telescope.actions')
+
+telescope.setup{
+  defaults = {
+     file_ignore_patterns = {
+         "node_modules",
+         ".git"
+         },
+    mappings = {
+      n = {
+        ["q"] = actions.close
+      },
+    },
+  }
+}
+
+
 EOF
 
 "--------------------------------------
@@ -290,10 +321,10 @@ au VimLeave * set guicursor=a:ver1
 let mapleader=" "
 
 " Find files using Telescope command-line sugar.
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap  <silent> ;f <cmd>lua require('telescope.builtin').find_files({find_command = { 'rg', '--files', '--hidden' } })<cr>
+nnoremap  <silent> ;r <cmd>lua require('telescope.builtin').live_grep({ vimgrep_arguments = { 'rg',  '--no-heading', '--with-filename', '--line-number', '--column', '--smart-case', '-u', '--hidden' } })<cr>
+nnoremap <silent> \\ <cmd>Telescope buffers<cr>
+nnoremap <silent> ;; <cmd>Telescope help_tags<cr>
 
 " Switching Buffers
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
