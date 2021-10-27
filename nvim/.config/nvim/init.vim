@@ -16,12 +16,10 @@ set nobackup
 
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
-    " Plug 'joshdick/onedark.vim'   
     Plug 'sainnhe/everforest'
     Plug 'preservim/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'ap/vim-css-color'
-    " Plug 'steelsojka/pears.nvim'
     Plug 'windwp/nvim-autopairs'
     Plug 'romgrk/barbar.nvim'
     Plug 'ryanoasis/vim-devicons'
@@ -32,7 +30,9 @@ call plug#begin('~/.vim/plugged')
     Plug 'kevinhwang91/rnvimr', {'do': 'make sync'}
     Plug 'rbgrouleff/bclose.vim'
     Plug 'neovim/nvim-lspconfig'
-    Plug 'hrsh7th/nvim-compe'
+    Plug 'hrsh7th/cmp-nvim-lsp'
+    Plug 'hrsh7th/cmp-buffer'
+    Plug 'hrsh7th/nvim-cmp'
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -44,15 +44,15 @@ call plug#begin('~/.vim/plugged')
     Plug 'alvan/vim-closetag'
     Plug 'tpope/vim-surround'
     Plug 'SirVer/ultisnips'
-    Plug 'mlaursen/vim-react-snippets'
     Plug 'lambdalisue/suda.vim'
     Plug 'mhartington/formatter.nvim'
-    Plug 'glepnir/lspsaga.nvim'
+    Plug 'ray-x/guihua.lua', {'do': 'cd lua/fzy && make' }
+    Plug 'ray-x/navigator.lua'
     Plug 'mattn/emmet-vim'
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'mfussenegger/nvim-jdtls'
     Plug 'RishabhRD/popfix'
     Plug 'RishabhRD/nvim-lsputils'
+    " Plug 'github/copilot.vim'
 call plug#end()
 
 syntax on
@@ -99,78 +99,53 @@ require('nvim-autopairs').setup({
   enable_check_bracket_line = false
 })
 
+require("nvim-autopairs.completion.cmp").setup({
+  map_cr = true, --  map <CR> on insert mode
+  map_complete = true, -- it will auto insert `(` (map_char) after select function or method item
+  auto_select = true, -- automatically select the first item
+  insert = false, -- use insert confirm behavior instead of replace
+  map_char = { -- modifies the function or method delimiter by filetypes
+    all = '(',
+    tex = '{'
+  }
+})
+
 --- Autocomplete with nvim lsp
 vim.o.completeopt = "menuone,noselect"
 
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = false;
+  -- Setup nvim-cmp.
+  local cmp = require'cmp'
 
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    vsnip = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    spell = true;
-    tags = true;
-    snippets_nvim = true;
-    treesitter = true;
-  };
-}
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
+  cmp.setup({
+    snippet = {
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+        -- require'snippy'.expand_snippet(args.body) -- For `snippy` users.
+      end,
+    },
+    mapping = {
+      ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.close(),
+      ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
+      ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' }, -- For vsnip users.
+      -- { name = 'luasnip' }, -- For luasnip users.
+      -- { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
 
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-        return true
-    else
-        return false
-    end
-end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
-  elseif vim.fn.call("vsnip#available", {1}) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
-  elseif check_back_space() then
-    return t "<Tab>"
-  else
-    return vim.fn['compe#complete']()
-  end
-end
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    return t "<S-Tab>"
-  end
-end
-
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+  -- Setup lspconfig.
+  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 
 ---Nvim Treesitter
@@ -230,7 +205,9 @@ require "lspconfig".cssls.setup(
     }
   }
 )
-require "lspconfig".tsserver.setup {}
+require "lspconfig".tsserver.setup {
+    capabilities = capabilities
+	}
 
 -- LSP Prevents inline buffer annotations
 vim.lsp.diagnostic.show_line_diagnostics()
@@ -242,32 +219,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] =
   }
 )
 
--- LSP Saga config & keys https://github.com/glepnir/lspsaga.nvim
-local saga = require "lspsaga"
-saga.init_lsp_saga {
-  code_action_icon = " ",
-  definition_preview_icon = "  ",
-  dianostic_header_icon = "   ",
-  error_sign = " ",
-  finder_definition_icon = "  ",
-  finder_reference_icon = "  ",
-  hint_sign = "⚡",
-  infor_sign = "",
-  warn_sign = ""
-}
 
-map("n", "<Leader>cf", ":Lspsaga lsp_finder<CR>", {silent = true})
-map("n", "<leader>ca", ":Lspsaga code_action<CR>", {silent = true})
-map("v", "<leader>ca", ":<C-U>Lspsaga range_code_action<CR>", {silent = true})
-map("n", "<leader>ch", ":Lspsaga hover_doc<CR>", {silent = true})
-map("n", "<leader>ck", '<cmd>lua require("lspsaga.action").smart_scroll_with_saga(-1)<CR>', {silent = true})
-map("n", "<leader>cj", '<cmd>lua require("lspsaga.action").smart_scroll_with_saga(1)<CR>', {silent = true})
-map("n", "<leader>cs", ":Lspsaga signature_help<CR>", {silent = true})
-map("n", "<leader>ci", ":Lspsaga show_line_diagnostics<CR>", {silent = true})
-map("n", "<leader>cn", ":Lspsaga diagnostic_jump_next<CR>", {silent = true})
-map("n", "<leader>cp", ":Lspsaga diagnostic_jump_prev<CR>", {silent = true})
-map("n", "<leader>cr", ":Lspsaga rename<CR>", {silent = true})
-map("n", "<leader>cd", ":Lspsaga preview_definition<CR>", {silent = true})
+require'navigator'.setup()
 
 
 -- Prettier function for formatter
@@ -448,9 +401,6 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-" Deoplete
-let g:deoplete#enable_at_startup = 1
-
 
 " Vim signify
 " default updatetime 4000ms is not good for async update
@@ -493,3 +443,30 @@ endfunc
 " abbreviations
 iabbr sout System.out.println(<Right>;<Left><Left><c-r>=Eatchar('\m\s\<bar>/')<cr>
 iabbr jmain public static void main(String[] args){}<Left><Return>
+
+
+" Expand
+imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'       '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+let g:vsnip_filetypes.typescriptreact = ['typescript']
