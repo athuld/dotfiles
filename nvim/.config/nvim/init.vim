@@ -1,18 +1,61 @@
-set scrolloff=8
+" init autocmd
+autocmd!
+" set script encoding
+scriptencoding utf-8
+" stop loading config if it's on tiny or small
+
 set number
-set relativenumber
-set tabstop=4 softtabstop=4
-set shiftwidth=4
+syntax enable
+set fileencodings=utf-8
+set encoding=utf-8
+set title
+set autoindent
+set background=dark
+set nobackup
+set nohlsearch
+set showcmd
+set cmdheight=1
+set laststatus=2
+set scrolloff=8
 set expandtab
 set smartindent
-set clipboard=unnamedplus
-set encoding=UTF-8
-set mouse=nv
-set nohlsearch
-set hidden
-set noswapfile
-set nobackup
+"let loaded_matchparen = 1
+set backupskip=/tmp/*,/private/tmp/*
 
+" incremental substitution (neovim)
+if has('nvim')
+  set inccommand=split
+endif
+
+" Suppress appending <PasteStart> and <PasteEnd> when pasting
+set t_BE=
+
+set nosc noru nosm
+" Don't redraw while executing macros (good performance config)
+set lazyredraw
+"set showmatch
+" How many tenths of a second to blink when matching brackets
+"set mat=2
+" Ignore case when searching
+set ignorecase
+" Be smart when using tabs ;)
+set smarttab
+" indents
+filetype plugin indent on
+set shiftwidth=2
+set tabstop=2
+set ai "Auto indent
+set si "Smart indent
+set nowrap "No Wrap lines
+set backspace=start,eol,indent
+" Finding files - Search down into subfolders
+set path+=**
+set wildignore+=*/node_modules/*
+set clipboard=unnamedplus
+set mouse=nv
+set completeopt=menu,menuone,noselect
+set modifiable
+set relativenumber
 
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
@@ -30,10 +73,14 @@ call plug#begin('~/.vim/plugged')
     Plug 'kevinhwang91/rnvimr', {'do': 'make sync'}
     Plug 'rbgrouleff/bclose.vim'
     Plug 'neovim/nvim-lspconfig'
+    Plug 'kabouzeid/nvim-lspinstall'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
+    Plug 'hrsh7th/cmp-path'
+    Plug 'hrsh7th/cmp-cmdline'
     Plug 'onsails/lspkind-nvim'
+    Plug 'hrsh7th/cmp-vsnip'
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -54,6 +101,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'RishabhRD/popfix'
     Plug 'RishabhRD/nvim-lsputils'
     " Plug 'github/copilot.vim'
+    Plug 'sbdchd/neoformat'
 call plug#end()
 
 syntax on
@@ -212,57 +260,18 @@ require "lspconfig".cssls.setup(
     }
   }
 )
-require "lspconfig".tsserver.setup {
+
+require'lspinstall'.setup()
+local servers = require'lspinstall'.installed_servers()
+for _, server in pairs(servers) do
+  require'lspconfig'[server].setup{
     capabilities = capabilities
-	}
-
--- LSP Prevents inline buffer annotations
-vim.lsp.diagnostic.show_line_diagnostics()
-vim.lsp.handlers["textDocument/publishDiagnostics"] =
-  vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics,
-  {
-    virtual_text = false
-  }
-)
-
-
-require'navigator'.setup()
-
-
--- Prettier function for formatter
-local prettier = function()
-  return {
-    exe = "prettier",
-    args = {"--stdin-filepath", vim.api.nvim_buf_get_name(0), "--double-quote"},
-    stdin = true
   }
 end
 
-require("formatter").setup(
-  {
-    logging = false,
-    filetype = {
-      javascript = {prettier},
-      typescript = {prettier},
-      html = {prettier},
-      css = {prettier},
-      scss = {prettier},
-      markdown = {prettier},
-    }
-  }
-)
 
--- Runs Formatter on save
-vim.api.nvim_exec(
-  [[
-augroup FormatAutogroup
-  autocmd!
-  autocmd BufWritePost *.js,*.ts,*.css,*.scss,*.md,*.html,*.lua : FormatWrite
-augroup END
-]],
-  true
-)
+
+require'navigator'.setup()
 
 -- Telescope
 function telescope_buffer_dir()
@@ -501,3 +510,8 @@ xmap        S   <Plug>(vsnip-cut-text)
 let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
+
+" augroup fmt
+"   autocmd!
+"   autocmd BufWritePost * undojoin | Neoformat
+" augroup END
