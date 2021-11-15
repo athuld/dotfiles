@@ -36,7 +36,6 @@ set lazyredraw
 "set showmatch
 " How many tenths of a second to blink when matching brackets
 "set mat=2
-" Ignore case when searching
 set ignorecase
 " Be smart when using tabs ;)
 set smarttab
@@ -53,16 +52,17 @@ set path+=**
 set wildignore+=*/node_modules/*
 set clipboard=unnamedplus
 set mouse=nv
-set completeopt=menu,menuone,noselect
 set modifiable
 set relativenumber
-
+set cursorline
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
     Plug 'sainnhe/everforest'
+    Plug 'rmehri01/onenord.nvim', { 'branch': 'main' }
+    Plug 'folke/tokyonight.nvim'
     Plug 'preservim/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
-    Plug 'ap/vim-css-color'
+    Plug 'gko/vim-coloresque'
     Plug 'windwp/nvim-autopairs'
     Plug 'romgrk/barbar.nvim'
     Plug 'ryanoasis/vim-devicons'
@@ -83,17 +83,18 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/cmp-vsnip'
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'junegunn/rainbow_parentheses.vim'
+    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'p00f/nvim-ts-rainbow'
     Plug 'tpope/vim-commentary'
-    Plug 'mhinz/vim-signify'
+    " Plug 'mhinz/vim-signify'
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'lewis6991/gitsigns.nvim'
     Plug 'voldikss/vim-floaterm'
     Plug 'neoclide/vim-jsx-improve'
     Plug 'alvan/vim-closetag'
     Plug 'tpope/vim-surround'
     Plug 'SirVer/ultisnips'
     Plug 'lambdalisue/suda.vim'
-    Plug 'mhartington/formatter.nvim'
     Plug 'ray-x/guihua.lua', {'do': 'cd lua/fzy && make' }
     Plug 'ray-x/navigator.lua'
     Plug 'mattn/emmet-vim'
@@ -101,20 +102,23 @@ call plug#begin('~/.vim/plugged')
     Plug 'RishabhRD/popfix'
     Plug 'RishabhRD/nvim-lsputils'
     " Plug 'github/copilot.vim'
-    Plug 'sbdchd/neoformat'
+    Plug 'lukas-reineke/indent-blankline.nvim'
+    Plug 'kdheepak/lazygit.nvim'
+    Plug 'mhartington/formatter.nvim'
 call plug#end()
 
 syntax on
-" colorscheme onedark
-set background=dark
-colorscheme everforest
+" let g:tokyonight_style="night"
+" colorscheme tokyonight
+" set background=dark
+let g:everforest_better_performance = 1
 let g:everforest_background = 'hard'
 let g:everforest_diagnostic_text_highlight = 1
 let g:everforest_diagnostic_line_highlight = 1
 let g:everforest_enable_italic = 1
 let g:everforest_diagnostic_virtual_text = 'colored'
-let g:everforest_better_performance = 1
-
+colorscheme everforest
+" colorscheme onenord
 "------------------------------------
 " Lua Configs
 
@@ -135,12 +139,9 @@ end
 --- Statusline : Lualine
 require('lualine').setup{
 options = {theme = 'everforest',
-  section_separators = {'', ''},
-  component_separators = {'', ''}
+section_separators = { left = '', right = ''},
+component_separators = { left = '', right = ''}
 },
-sections={ 
-lualine_c = {'diff','filename'},
-}
 }
 
 --- Auto Pairs
@@ -148,7 +149,7 @@ require('nvim-autopairs').setup({
   enable_check_bracket_line = false
 })
 
-require("nvim-autopairs.completion.cmp").setup({
+require("cmp").setup({
   map_cr = true, --  map <CR> on insert mode
   map_complete = true, -- it will auto insert `(` (map_char) after select function or method item
   auto_select = true, -- automatically select the first item
@@ -207,15 +208,31 @@ cmp.setup {
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
-    disable = {},
   },
   indent = {
     enable = false,
     disable = {},
   },
+  rainbow = {
+    enable = true,
+    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+    max_file_lines = nil,
+    colors = {
+        "#c678dd",
+        "#d19a66",
+        "#56b6c2",
+        "#ff6bf3",
+        "#666bd1",
+        "#c27556",
+        }
+    },
   ensure_installed = {
+    "lua",
+    "vim",
+    "go",
     "tsx",
     "javascript",
+    "typescript",
     "css",
     "java",
     "json",
@@ -295,7 +312,58 @@ telescope.setup{
   }
 }
 
+vim.opt.list = true
 
+require("indent_blankline").setup{}
+require('gitsigns').setup{signs = {
+    add          = {hl = 'GitSignsAdd'   , text = '▎', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'},
+    change       = {hl = 'GitSignsChange', text = '▎', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
+    delete       = {hl = 'GitSignsDelete', text = '_', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
+    topdelete    = {hl = 'GitSignsDelete', text = '‾', numhl='GitSignsDeleteNr', linehl='GitSignsDeleteLn'},
+    changedelete = {hl = 'GitSignsChange', text = '~', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
+    }}
+
+-- Prettier function for formatter
+function prettier()
+  return {
+    exe = 'prettierd',
+    args = {
+      '--config-precedence',
+      'prefer-file',
+      '--print-width',
+      vim.bo.textwidth,
+      '--stdin-filepath',
+      vim.fn.shellescape(vim.api.nvim_buf_get_name(0)),
+    },
+    stdin = true,
+  }
+end
+
+require("formatter").setup(
+  {
+    logging = false,
+    filetype = {
+      javascript = {prettier},
+      javascriptreact ={prettier},
+      typescript = {prettier},
+      html = {prettier},
+      css = {prettier},
+      scss = {prettier},
+      markdown = {prettier},
+    }
+  }
+)
+
+-- Runs Formatter on save
+vim.api.nvim_exec(
+  [[
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost *.js,*.ts,*.css,*.scss,*.md,*.html,*.lua : FormatWrite
+augroup END
+]],
+  true
+)
 EOF
 
 "--------------------------------------
@@ -350,6 +418,7 @@ nmap <space>e :RnvimrToggle<CR>
 
 
 " NERDTree
+let g:NERDTreeIgnore = ['^node_modules$']
 nnoremap <leader>n :NERDTreeToggle<CR>
 
 " LSP config (the mappings used in the default file don't quite work right)
@@ -364,11 +433,6 @@ nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 " Comments
 map <C-_> gc
-
-" Vim Signify
-let g:signify_sign_add               = '▎'
-let g:signify_sign_delete            = '▎'
-let g:signify_sign_change            = '▎'
 
 " Floaterm 
 let g:floaterm_keymap_toggle = '<leader>fd'
@@ -442,16 +506,6 @@ let g:user_emmet_settings = {
 \}
 
 
-" Vim signify
-" default updatetime 4000ms is not good for async update
-set updatetime=2000
-
-" Rainbow
-let g:rainbow#max_level = 16
-let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
-
-autocmd FileType * RainbowParentheses
-
 " Some general remaps
 
 " To keep inline with D and C maps
@@ -511,7 +565,9 @@ let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 
-" augroup fmt
-"   autocmd!
-"   autocmd BufWritePost * undojoin | Neoformat
-" augroup END
+let g:lazygit_floating_window_winblend = 0 " transparency of floating window
+let g:lazygit_floating_window_scaling_factor = 0.9 " scaling factor for floating window
+let g:lazygit_floating_window_corner_chars = ['╭', '╮', '╰', '╯'] " customize lazygit popup window corner characters
+let g:lazygit_floating_window_use_plenary = 0 " use plenary.nvim to manage floating window if available
+" setup mapping to call :LazyGit
+nnoremap <silent> <leader>gg :LazyGit<CR>
