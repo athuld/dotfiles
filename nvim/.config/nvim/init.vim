@@ -60,8 +60,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
     Plug 'sainnhe/everforest'
     Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-    Plug 'preservim/nerdtree'
-    Plug 'Xuyuanp/nerdtree-git-plugin'
+    Plug 'tpope/vim-markdown'
+    Plug 'kyazdani42/nvim-tree.lua'
     Plug 'gko/vim-coloresque'
     Plug 'windwp/nvim-autopairs'
     Plug 'romgrk/barbar.nvim'
@@ -104,9 +104,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'RishabhRD/popfix'
     Plug 'RishabhRD/nvim-lsputils'
     " Plug 'github/copilot.vim'
-    Plug 'lukas-reineke/indent-blankline.nvim'
     Plug 'kdheepak/lazygit.nvim'
     Plug 'mhartington/formatter.nvim'
+    Plug 'junegunn/goyo.vim'
+    Plug 'junegunn/limelight.vim'
+    Plug 'vimwiki/vimwiki'
 call plug#end()
 
 syntax on
@@ -210,7 +212,11 @@ require'nvim-treesitter.configs'.setup {
     enable = false,
     disable = {},
   },
-   colors = {
+ rainbow = {
+    enable = true,
+    extended_mode = true,
+    max_file_lines = nil,
+    colors = {
         "#c678dd",
         "#d19a66",
         "#56b6c2",
@@ -218,11 +224,7 @@ require'nvim-treesitter.configs'.setup {
         "#666bd1",
         "#c27556",
     },
- rainbow = {
-    enable = true,
-    extended_mode = true,
-    max_file_lines = nil,
-    },
+  },
   ensure_installed = {
     "lua",
     "vim",
@@ -305,7 +307,6 @@ telescope.setup{
 
 vim.opt.list = true
 
-require("indent_blankline").setup{}
 require('gitsigns').setup{signs = {
     add          = {hl = 'GitSignsAdd'   , text = '▎', numhl='GitSignsAddNr'   , linehl='GitSignsAddLn'},
     change       = {hl = 'GitSignsChange', text = '▎', numhl='GitSignsChangeNr', linehl='GitSignsChangeLn'},
@@ -337,6 +338,7 @@ require("formatter").setup(
       javascript = {prettier},
       javascriptreact ={prettier},
       typescript = {prettier},
+      vimwiki = {prettier},
       html = {prettier},
       css = {prettier},
       scss = {prettier},
@@ -356,6 +358,8 @@ augroup END
   true
 )
 
+-- Nvim Tree
+require('nvim-tree-config')
 EOF
 
 "--------------------------------------
@@ -408,10 +412,6 @@ let g:rnvimr_enable_picker = 1
 
 nmap <space>e :RnvimrToggle<CR>
 
-
-" NERDTree
-let g:NERDTreeIgnore = ['^node_modules$']
-nnoremap <leader>n :NERDTreeToggle<CR>
 
 " LSP config (the mappings used in the default file don't quite work right)
 nnoremap <silent> gd <cmd>lua vim.lsp.buf.definition()<CR>
@@ -570,7 +570,7 @@ smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l
 imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
 smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
 imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'       '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
 
 " Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
 " See https://github.com/hrsh7th/vim-vsnip/pull/50
@@ -590,3 +590,14 @@ let g:lazygit_floating_window_corner_chars = ['╭', '╮', '╰', '╯'] " cust
 let g:lazygit_floating_window_use_plenary = 0 " use plenary.nvim to manage floating window if available
 " setup mapping to call :LazyGit
 nnoremap <silent> <leader>gg :LazyGit<CR>
+
+" Note taking setup with vimwiki and markdown
+let g:vimwiki_list = [{'path': '~/vimwiki/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'java']
+
+autocmd! User GoyoEnter Limelight
+autocmd! User GoyoLeave Limelight!
+
+nnoremap <silent> <leader>go :Goyo<CR>
