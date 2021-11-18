@@ -55,11 +55,11 @@ set mouse=nv
 set modifiable
 set relativenumber
 set cursorline
+set nocompatible
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
     Plug 'sainnhe/everforest'
-    Plug 'rmehri01/onenord.nvim', { 'branch': 'main' }
-    Plug 'folke/tokyonight.nvim'
+    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
     Plug 'preservim/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     Plug 'gko/vim-coloresque'
@@ -84,9 +84,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'yuezk/vim-js'
+    Plug 'maxmellon/vim-jsx-pretty'
+    Plug 'luochen1990/rainbow'
     Plug 'p00f/nvim-ts-rainbow'
     Plug 'tpope/vim-commentary'
-    " Plug 'mhinz/vim-signify'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'voldikss/vim-floaterm'
@@ -108,17 +110,17 @@ call plug#begin('~/.vim/plugged')
 call plug#end()
 
 syntax on
-" let g:tokyonight_style="night"
-" colorscheme tokyonight
-" set background=dark
-let g:everforest_better_performance = 1
+
+set termguicolors
+filetype plugin on
 let g:everforest_background = 'hard'
+let g:everforest_better_performance = 1
 let g:everforest_diagnostic_text_highlight = 1
 let g:everforest_diagnostic_line_highlight = 1
-let g:everforest_enable_italic = 1
+let g:everforest_enable_italic = 0
 let g:everforest_diagnostic_virtual_text = 'colored'
-colorscheme everforest
-" colorscheme onenord
+let g:everforest_ui_contrast = 'high'
+colorscheme everforest 
 "------------------------------------
 " Lua Configs
 
@@ -169,10 +171,7 @@ vim.o.completeopt = "menuone,noselect"
   cmp.setup({
     snippet = {
       expand = function(args)
-        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
-        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
-        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
-        -- require'snippy'.expand_snippet(args.body) -- For `snippy` users.
+        vim.fn["vsnip#anonymous"](args.body)
       end,
     },
     mapping = {
@@ -185,10 +184,7 @@ vim.o.completeopt = "menuone,noselect"
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
-      { name = 'vsnip' }, -- For vsnip users.
-      -- { name = 'luasnip' }, -- For luasnip users.
-      -- { name = 'ultisnips' }, -- For ultisnips users.
-      -- { name = 'snippy' }, -- For snippy users.
+      { name = 'vsnip' },
     }, {
       { name = 'buffer' },
     })
@@ -208,31 +204,29 @@ cmp.setup {
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
+    use_languagetree = true,
   },
   indent = {
     enable = false,
     disable = {},
   },
-  rainbow = {
-    enable = true,
-    extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-    max_file_lines = nil,
-    colors = {
+   colors = {
         "#c678dd",
         "#d19a66",
         "#56b6c2",
         "#ff6bf3",
         "#666bd1",
         "#c27556",
-        }
+    },
+ rainbow = {
+    enable = true,
+    extended_mode = true,
+    max_file_lines = nil,
     },
   ensure_installed = {
     "lua",
     "vim",
     "go",
-    "tsx",
-    "javascript",
-    "typescript",
     "css",
     "java",
     "json",
@@ -242,9 +236,6 @@ require'nvim-treesitter.configs'.setup {
     "python"
   },
 }
-
-local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-parser_config.tsx.used_by = { "javascript", "typescript.tsx" }
 
 -- LSP this is needed for LSP completions in CSS along with the snippets plugin
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -364,6 +355,7 @@ augroup END
 ]],
   true
 )
+
 EOF
 
 "--------------------------------------
@@ -498,12 +490,39 @@ let g:closetag_shortcut = '>'
 let g:closetag_close_shortcut = '<C-]>'
 
 " Emmet
-let g:user_emmet_leader_key='<C-l>'
 let g:user_emmet_settings = {
 \  'javascript' : {
 \      'extends' : 'jsx',
 \  },
 \}
+" Remapping <C-y>, just doesn't cut it.
+  function! s:expand_html_tab()
+" try to determine if we're within quotes or tags.
+" if so, assume we're in an emmet fill area.
+   let line = getline('.')
+   if col('.') < len(line)
+     let line = matchstr(line, '[">][^<"]*\%'.col('.').'c[^>"]*[<"]')
+     if len(line) >= 2
+        return "\<C-n>"
+     endif
+   endif
+" expand anything emmet thinks is expandable.
+  if emmet#isExpandable()
+    return emmet#expandAbbrIntelligent("\<tab>")
+    " return "\<C-y>,"
+  endif
+" return a regular tab character
+  return "\<tab>"
+  endfunction
+  " let g:user_emmet_expandabbr_key='<Tab>'
+  " imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+
+  autocmd FileType html,css,scss,typescriptreact,vue,javascript,markdown.mdx imap <silent><buffer><expr><tab> <sid>expand_html_tab()
+  let g:user_emmet_mode='a'
+  let g:user_emmet_complete_tag = 0
+  let g:user_emmet_install_global = 0
+  autocmd FileType html,css,scss,typescriptreact,vue,javascript,markdown.mdx EmmetInstall
+"}}}
 
 
 " Some general remaps
