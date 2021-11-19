@@ -1,15 +1,60 @@
 #!/bin/bash
 
-# compile the java file
-javac $1
+# Color section
+GREEN="\e[1;32m"
+RED="\e[1;31m"
+MAGENTA="\e[1;35m"
+ENDCOLOR="\e[0m"
+
+# The status section
+STATUS="${GREEN}Compiling ==> ${MAGENTA}${1} ${ENDCOLOR}"
+
+successStatus(){
+  rm -f javaLog.txt
+  echo -ne "\r${STATUS}${GREEN}==> SUCCESS!${ENDCOLOR}\n\n"
+  echo -ne "${GREEN}OUTPUT:${ENDCOLOR}\n\n"
+}
+
+failedStatus(){
+  echo -ne "\r${STATUS}${RED}==> FAILED${ENDCOLOR}\n\n"
+  echo -ne "${RED}ERROR:${ENDCOLOR}\n"
+  cat javaLog.txt
+  rm -f javaLog.txt
+  exit 1
+}
+
+# Check the compile status
+checkStatus(){
+  if [ $? -eq 0 ]; then
+    successStatus
+  else
+    failedStatus
+  fi
+}
+
+#Initial compile message
+clear
+echo -ne "\n\n${STATUS}"
+
+# Initial config section
 
 # get the filename without extension
 fileName=$(basename $1 .java)
 
-# execute it !
-java $fileName
+# Check if it's a package
+packageName=$(grep -m 1 'package' $1 | cut -d' ' -f2- | sed 's/;//g')
 
-# remove all the class files for cleanup purpose
-if [ -f *.class ];then
-    rm *.class
+# Execution section
+
+# execute and remove class files automatically !
+if [ -z "$packageName" ];then
+  javac $1 &> javaLog.txt
+  checkStatus
+  java $fileName
+  rm -f *class
+else
+  javac -d .out *.java &> javaLog.txt
+  checkStatus
+  cd .out && java $packageName.$fileName && cd - >/dev/null
+  rm -rf .out
 fi
