@@ -39,8 +39,6 @@ set lazyredraw
 set ignorecase
 " Be smart when using tabs ;)
 set smarttab
-" indents
-filetype plugin indent on
 set shiftwidth=2
 set tabstop=2
 set ai "Auto indent
@@ -109,6 +107,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/goyo.vim'
     Plug 'junegunn/limelight.vim'
     Plug 'vimwiki/vimwiki'
+    Plug 'sedm0784/vim-you-autocorrect'
+    Plug 'lukas-reineke/indent-blankline.nvim'
 call plug#end()
 
 syntax on
@@ -153,16 +153,15 @@ require('nvim-autopairs').setup({
   enable_check_bracket_line = false
 })
 
-require("cmp").setup({
-  map_cr = true, --  map <CR> on insert mode
-  map_complete = true, -- it will auto insert `(` (map_char) after select function or method item
-  auto_select = true, -- automatically select the first item
-  insert = false, -- use insert confirm behavior instead of replace
-  map_char = { -- modifies the function or method delimiter by filetypes
-    all = '(',
-    tex = '{'
-  }
-})
+-- Tab selection for cmp
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
+
+local feedkey = function(key, mode)
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
+end
 
 --- Autocomplete with nvim lsp
 vim.o.completeopt = "menuone,noselect"
@@ -171,6 +170,10 @@ vim.o.completeopt = "menuone,noselect"
   local cmp = require'cmp'
 
   cmp.setup({
+  map_cr = true, --  map <CR> on insert mode
+  map_complete = true, -- it will auto insert `(` (map_char) after select function or method item
+  auto_select = true, -- automatically select the first item
+  insert = false, -- use insert confirm behavior instead of replace
     snippet = {
       expand = function(args)
         vim.fn["vsnip#anonymous"](args.body)
@@ -183,15 +186,34 @@ vim.o.completeopt = "menuone,noselect"
       ['<C-e>'] = cmp.mapping.close(),
       ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
       ['<CR>'] = cmp.mapping.confirm({ select = true }),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif vim.fn["vsnip#available"](1) == 1 then
+        feedkey("<Plug>(vsnip-expand-or-jump)", "")
+      elseif has_words_before() then
+        cmp.complete()
+      else
+        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
+      end
+    end, { "i", "s" }),
+
+    ["<S-Tab>"] = cmp.mapping(function()
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
+        feedkey("<Plug>(vsnip-jump-prev)", "")
+      end
+    end, { "i", "s" }),
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
       { name = 'vsnip' },
     }, {
-      { name = 'buffer' },
+      { name = 'buffer',keyword_lenght=5 },
     })
   })
-
+ 
   -- Setup lspconfig.
   local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
@@ -207,10 +229,6 @@ require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,
     use_languagetree = true,
-  },
-  indent = {
-    enable = false,
-    disable = {},
   },
  rainbow = {
     enable = true,
@@ -275,6 +293,7 @@ require'lspinstall'.setup()
 local servers = require'lspinstall'.installed_servers()
 for _, server in pairs(servers) do
   require'lspconfig'[server].setup{
+    autostart = false,
     capabilities = capabilities
   }
 end
@@ -360,6 +379,26 @@ augroup END
 
 -- Nvim Tree
 require('nvim-tree-config')
+
+vim.cmd [[highlight IndentBlanklineIndent guifg=#434e59 gui=nocombine]]
+
+vim.opt.list = true
+require("indent_blankline").setup{
+    use_treesitter = true,
+    show_trailing_blankline_indent = false,
+    buftype_exclude = {"terminal"},
+    filetype_exclude = {
+    "NvimTree",
+    "lspinfo",
+    "TelescopePrompt",
+    "TelescopeResults"
+    },
+    char_highlight_list = {
+      "IndentBlanklineIndent",
+    }
+}
+
+
 EOF
 
 "--------------------------------------
@@ -439,8 +478,6 @@ let g:floaterm_width=0.8
 let g:floaterm_height=0.8
 let g:floaterm_wintitle=0
 let g:floaterm_autoclose=1
-" Open up lazygit
-nnoremap <leader>fg :FloatermNew lazygit<CR>
 " Open up gotop
 nnoremap <leader>fgt :FloatermNew gotop<CR>
 
@@ -553,10 +590,6 @@ nnoremap <leader>k :m .-2<CR>==
         return (c =~ a:pat) ? '' : c
 endfunc
 
-" abbreviations
-iabbr sout System.out.println(<Right>;<Left><Left><c-r>=Eatchar('\m\s\<bar>/')<cr>
-iabbr jmain public static void main(String[] args){}<Left><Return>
-
 
 " Expand
 imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
@@ -601,3 +634,14 @@ autocmd! User GoyoEnter Limelight
 autocmd! User GoyoLeave Limelight!
 
 nnoremap <silent> <leader>go :Goyo<CR>
+
+" Folds
+augroup remember_folds
+  autocmd!
+  au BufWinLeave ?* mkview 1
+  au BufWinEnter ?* silent! loadview 1
+augroup END
+
+" Auto corrections
+nnoremap <silent> <leader>sp :EnableAutocorrect<CR>
+nnoremap <silent> <leader>spp :DisableAutocorrect<CR>
