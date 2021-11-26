@@ -9,7 +9,10 @@ alias \
 	cp="cp -iv" \
 	mv="mv -iv" \
 	rm="rm -vI" \
-	mkd="mkdir -pv"
+	mkd="mkdir -pv" \
+	jc="compile" \
+	z="zathura" \
+	lb="libreoffice"
 
 # shortcuts
 alias \

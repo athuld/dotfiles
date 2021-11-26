@@ -14,7 +14,6 @@ lightdm-settings
 mongodb-bin
 mongodb-compass
 mongodb-tools-bin
-mpv-handler-git
 neovim-git
 nerd-fonts-cascadia-code
 nerd-fonts-fira-code
@@ -38,7 +37,6 @@ spotify-tray-git
 spotify-tui
 spotifyd-full-git
 spotifywm-git
-termite
 ttf-malayalam-font-meera
 ttf-meslo
 ttf-meslo-nerd-font-powerlevel10k

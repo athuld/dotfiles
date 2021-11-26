@@ -9,27 +9,27 @@ ENDCOLOR="\e[0m"
 # The status section
 STATUS="${GREEN}Compiling ==> ${MAGENTA}${1} ${ENDCOLOR}"
 
-successStatus(){
-  rm -f javaLog.txt
-  echo -ne "\r${STATUS}${GREEN}==> SUCCESS!${ENDCOLOR}\n\n"
-  echo -ne "${GREEN}OUTPUT:${ENDCOLOR}\n\n"
+successStatus() {
+	rm -f javaLog.txt
+	echo -ne "\r${STATUS}${GREEN}==> SUCCESS!${ENDCOLOR}\n\n"
+	echo -ne "${GREEN}OUTPUT:${ENDCOLOR}\n\n"
 }
 
-failedStatus(){
-  echo -ne "\r${STATUS}${RED}==> FAILED${ENDCOLOR}\n\n"
-  echo -ne "${RED}ERROR:${ENDCOLOR}\n"
-  cat javaLog.txt
-  rm -f javaLog.txt
-  exit 1
+failedStatus() {
+	echo -ne "\r${STATUS}${RED}==> FAILED${ENDCOLOR}\n\n"
+	echo -ne "${RED}ERROR:${ENDCOLOR}\n"
+	cat javaLog.txt
+	rm -f javaLog.txt
+	exit 1
 }
 
 # Check the compile status
-checkStatus(){
-  if [ $? -eq 0 ]; then
-    successStatus
-  else
-    failedStatus
-  fi
+checkStatus() {
+	if [ $? -eq 0 ]; then
+		successStatus
+	else
+		failedStatus
+	fi
 }
 
 #Initial compile message
@@ -43,18 +43,30 @@ fileName=$(basename $1 .java)
 
 # Check if it's a package
 packageName=$(grep -m 1 'package' $1 | cut -d' ' -f2- | sed 's/;//g')
+isApplet=$(grep -m 1 'java.applet' $1)
+packageDir=$(echo $packageName | sed 's/\./\//g')
 
 # Execution section
 
 # execute and remove class files automatically !
-if [ -z "$packageName" ];then
-  javac $1 &> javaLog.txt
-  checkStatus
-  java $fileName
-  rm -f *class
+if [ -z "$packageName" ]; then
+	javac $1 &>javaLog.txt
+	checkStatus
+	if [ -z "$isApplet" ]; then
+		java $fileName
+	else
+		appletviewer $1
+	fi
+	rm -f *class
 else
-  javac -d .out *.java &> javaLog.txt
-  checkStatus
-  cd .out && java $packageName.$fileName && cd - >/dev/null
-  rm -rf .out
+	mkdir -p .out
+	javac -d .out *.java &>javaLog.txt
+	checkStatus
+	if [ -z "$isApplet" ]; then
+		cd .out && java $packageName.$fileName && cd - >/dev/null
+	else
+		cp $1 .out
+		cd .out && appletviewer $1 && cd - >/dev/null
+	fi
+	rm -rf .out
 fi
