@@ -53,7 +53,7 @@ set mouse=nv
 set modifiable
 set relativenumber
 set cursorline
-set nocompatible
+set noswapfile
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
     Plug 'sainnhe/everforest'
@@ -62,6 +62,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'kyazdani42/nvim-tree.lua'
     Plug 'gko/vim-coloresque'
     Plug 'windwp/nvim-autopairs'
+    Plug 'windwp/nvim-ts-autotag'
     Plug 'romgrk/barbar.nvim'
     Plug 'ryanoasis/vim-devicons'
     Plug 'kyazdani42/nvim-web-devicons'
@@ -71,7 +72,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'kevinhwang91/rnvimr', {'do': 'make sync'}
     Plug 'rbgrouleff/bclose.vim'
     Plug 'neovim/nvim-lspconfig'
-    Plug 'kabouzeid/nvim-lspinstall'
+    Plug 'williamboman/nvim-lsp-installer'
     Plug 'hrsh7th/cmp-nvim-lsp'
     Plug 'hrsh7th/cmp-buffer'
     Plug 'hrsh7th/nvim-cmp'
@@ -81,23 +82,17 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/cmp-vsnip'
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
-    Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'nvim-treesitter/nvim-treesitter',{'do': ':TSUpdate'}
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
-    Plug 'yuezk/vim-js'
-    Plug 'maxmellon/vim-jsx-pretty'
-    Plug 'luochen1990/rainbow'
     Plug 'p00f/nvim-ts-rainbow'
     Plug 'tpope/vim-commentary'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'akinsho/toggleterm.nvim'
-    Plug 'neoclide/vim-jsx-improve'
     Plug 'alvan/vim-closetag'
     Plug 'tpope/vim-surround'
     Plug 'SirVer/ultisnips'
     Plug 'lambdalisue/suda.vim'
-    Plug 'ray-x/guihua.lua', {'do': 'cd lua/fzy && make' }
-    Plug 'ray-x/navigator.lua'
     Plug 'mattn/emmet-vim'
     Plug 'mfussenegger/nvim-jdtls'
     Plug 'RishabhRD/popfix'
@@ -151,21 +146,15 @@ component_separators = { left = '', right = ''}
 
 --- Auto Pairs
 require('nvim-autopairs').setup({
-  enable_check_bracket_line = false
+  check_ts = true,
 })
+local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+local cmp = require('cmp')
+cmp.event:on( 'confirm_done', cmp_autopairs.on_confirm_done({  map_char = { tex = '' } }))
 
--- Tab selection for cmp
-local has_words_before = function()
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
-end
+-- Auto Tags
+require('nvim-ts-autotag').setup()
 
-local feedkey = function(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-end
-
---- Autocomplete with nvim lsp
-vim.o.completeopt = "menuone,noselect"
 
   -- Setup nvim-cmp.
   local cmp = require'cmp'
@@ -173,7 +162,6 @@ vim.o.completeopt = "menuone,noselect"
   cmp.setup({
   map_cr = true, --  map <CR> on insert mode
   map_complete = true, -- it will auto insert `(` (map_char) after select function or method item
-  auto_select = true, -- automatically select the first item
   insert = false, -- use insert confirm behavior instead of replace
     snippet = {
       expand = function(args)
@@ -181,47 +169,43 @@ vim.o.completeopt = "menuone,noselect"
       end,
     },
     mapping = {
+      ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+      ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
       ['<C-d>'] = cmp.mapping.scroll_docs(-4),
       ['<C-f>'] = cmp.mapping.scroll_docs(4),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.close(),
       ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
-      ['<CR>'] = cmp.mapping.confirm({ select = true }),
-      ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif vim.fn["vsnip#available"](1) == 1 then
-        feedkey("<Plug>(vsnip-expand-or-jump)", "")
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback() -- The fallback function sends a already mapped key. In this case, it's probably `<Tab>`.
-      end
-    end, { "i", "s" }),
-
-    ["<S-Tab>"] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
-      end
-    end, { "i", "s" }),
-    },
-    sources = cmp.config.sources({
+      ['<CR>'] = cmp.mapping.confirm({select=true}),
+      },
+     completion = {
+        completeopt = 'menu,menuone,noinsert'
+      },
+    sources = {
       { name = 'nvim_lsp' },
       { name = 'vsnip' },
-    }, {
-      { name = 'buffer',keyword_lenght=5 },
-    })
+      { name = 'buffer',keyword_length=5 },
+      { name = 'path'}
+    },
+    experimental={
+      native_menu=false,
+      ghost_text= true,
+    }
   })
  
-  -- Setup lspconfig.
-  local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-
+-- Lspkind
 local lspkind = require('lspkind')
 cmp.setup {
   formatting = {
-    format = lspkind.cmp_format(),
+    format = lspkind.cmp_format {
+      with_text = true,
+      menu = {
+        nvim_lsp = "[LSP]",
+        vsnip = "[snip]",
+        buffer = "[buf]",
+        path = "[path]",
+      },
+    },
   },
 }
 
@@ -244,67 +228,37 @@ require'nvim-treesitter.configs'.setup {
         "#c27556",
     },
   },
-  ensure_installed = {
-    "lua",
-    "vim",
-    "go",
-    "css",
-    "java",
-    "json",
-    "html",
-    "scss",
-    "bash",
-    "python"
-  },
+  ensure_installed = "maintained",
   context_commentstring = {
     enable = true
+  },
+  autopairs = {
+    enable = true
+  },
+  autotag = {
+    enable=true
   }
 }
 
--- LSP this is needed for LSP completions in CSS along with the snippets plugin
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-capabilities.textDocument.completion.completionItem.resolveSupport = {
-  properties = {
-    "documentation",
-    "detail",
-    "additionalTextEdits"
-  }
-}
+-- Lsp-Installer
+local lsp_installer = require("nvim-lsp-installer")
+lsp_installer.on_server_ready(function(server)
+    local opts = {}
+    opts.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    server:setup(opts)
+end)
+local lsp_installer = require("nvim-lsp-installer")
 
--- LSP Server config
-require "lspconfig".cssls.setup(
-  {
-    cmd = {"vscode-css-language-server", "--stdio"},
-    capabilities = capabilities,
-    settings = {
-      scss = {
-        lint = {
-          idSelector = "warning",
-          zeroUnits = "warning",
-          duplicateProperties = "warning"
-        },
-        completion = {
-          completePropertyWithSemicolon = true,
-          triggerPropertyValueCompletion = true
+lsp_installer.settings({
+    ui = {
+        icons = {
+            server_installed = "✓",
+            server_pending = "➜",
+            server_uninstalled = "✗"
         }
-      }
     }
-  }
-)
+})
 
-require'lspinstall'.setup()
-local servers = require'lspinstall'.installed_servers()
-for _, server in pairs(servers) do
-  require'lspconfig'[server].setup{
-    autostart = false,
-    capabilities = capabilities
-  }
-end
-
-
-
-require'navigator'.setup()
 
 -- Telescope
 function telescope_buffer_dir()
@@ -395,7 +349,8 @@ require("indent_blankline").setup{
     "NvimTree",
     "lspinfo",
     "TelescopePrompt",
-    "TelescopeResults"
+    "TelescopeResults",
+    "lsp-installer"
     },
     char_highlight_list = {
       "IndentBlanklineIndent",
@@ -425,6 +380,14 @@ require("toggleterm").setup{
     }
   }
 }
+
+-- Diagnostics Signs LSP
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
 
 EOF
 
@@ -493,51 +456,6 @@ nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 nmap <C-_> gcc
 vmap <C-_> gc
 
-
-" Close Tags
-" filenames like *.xml, *.html, *.xhtml, ...
-" These are the file extensions where this plugin is enabled.
-"
-let g:closetag_filenames = '*.html,*.xhtml,*.phtml,*.jsx,*js,*.tsx'
-
-" filenames like *.xml, *.xhtml, ...
-" This will make the list of non-closing tags self-closing in the specified files.
-"
-let g:closetag_xhtml_filenames = '*.xhtml,*.jsx,*.js,*tsx'
-
-" filetypes like xml, html, xhtml, ...
-" These are the file types where this plugin is enabled.
-"
-let g:closetag_filetypes = 'html,xhtml,phtml,jsx,tsx,js'
-
-" filetypes like xml, xhtml, ...
-" This will make the list of non-closing tags self-closing in the specified files.
-"
-let g:closetag_xhtml_filetypes = 'xhtml,jsx,js,tsx'
-
-" integer value [0|1]
-" This will make the list of non-closing tags case-sensitive (e.g. `<Link>` will be closed while `<link>` won't.)
-"
-let g:closetag_emptyTags_caseSensitive = 1
-
-" dict
-" Disables auto-close if not in a "valid" region (based on filetype)
-"
-let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ 'typescriptreact': 'jsxRegion,tsxRegion',
-    \ 'javascriptreact': 'jsxRegion',
-    \ }
-
-" Shortcut for closing tags, default is '>'
-"
-let g:closetag_shortcut = '>'
-
-" Add > at current position without closing the current tag, default is ''
-"
-let g:closetag_close_shortcut = '<C-]>'
-
 " Emmet
 let g:user_emmet_settings = {
 \  'javascript' : {
@@ -603,31 +521,9 @@ nnoremap <leader>k :m .-2<CR>==
 endfunc
 
 
-" Expand
-imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
-
 " Expand or jump
 imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
 smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
-
-" Jump forward or backward
-imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
-imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
-
-" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
-" See https://github.com/hrsh7th/vim-vsnip/pull/50
-nmap        s   <Plug>(vsnip-select-text)
-xmap        s   <Plug>(vsnip-select-text)
-nmap        S   <Plug>(vsnip-cut-text)
-xmap        S   <Plug>(vsnip-cut-text)
-
-" If you want to use snippet for multiple filetypes, you can `g:vsip_filetypes` for it.
-let g:vsnip_filetypes = {}
-let g:vsnip_filetypes.javascriptreact = ['javascript']
-let g:vsnip_filetypes.typescriptreact = ['typescript']
 
 let g:lazygit_floating_window_winblend = 0 " transparency of floating window
 let g:lazygit_floating_window_scaling_factor = 0.9 " scaling factor for floating window
