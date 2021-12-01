@@ -82,6 +82,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'hrsh7th/vim-vsnip'
     Plug 'hrsh7th/vim-vsnip-integ'
     Plug 'nvim-treesitter/nvim-treesitter'
+    Plug 'JoosepAlviste/nvim-ts-context-commentstring'
     Plug 'yuezk/vim-js'
     Plug 'maxmellon/vim-jsx-pretty'
     Plug 'luochen1990/rainbow'
@@ -89,7 +90,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-commentary'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'lewis6991/gitsigns.nvim'
-    Plug 'voldikss/vim-floaterm'
+    Plug 'akinsho/toggleterm.nvim'
     Plug 'neoclide/vim-jsx-improve'
     Plug 'alvan/vim-closetag'
     Plug 'tpope/vim-surround'
@@ -255,6 +256,9 @@ require'nvim-treesitter.configs'.setup {
     "bash",
     "python"
   },
+  context_commentstring = {
+    enable = true
+  }
 }
 
 -- LSP this is needed for LSP completions in CSS along with the snippets plugin
@@ -398,6 +402,29 @@ require("indent_blankline").setup{
     }
 }
 
+-- Toggleterm 
+require("toggleterm").setup{
+  open_mapping = [[<c-\>]],
+  hide_numbers = true,
+  shade_filetypes = {},
+  shade_terminals = true,
+  start_in_insert = true,
+  insert_mappings = true,
+  persist_size = true,
+  direction = 'float',
+  close_on_exit = true,
+  shell = vim.o.shell,
+  float_opts = {
+    border = 'curved',
+    width = 90,
+    height = 25,
+    winblend = 3,
+    highlights = {
+      border = "Normal",
+      background = "Normal",
+    }
+  }
+}
 
 EOF
 
@@ -463,23 +490,8 @@ nnoremap <silent> <C-n> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap <silent> <C-p> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 
 " Comments
-map <C-_> gc
-
-" Floaterm 
-let g:floaterm_keymap_toggle = '<leader>fd'
-let g:floaterm_keymap_next   = '<F2>'
-let g:floaterm_keymap_prev   = '<F3>'
-let g:floaterm_keymap_new    = '<F4>'
-let g:floaterm_keymap_kill   = '<leader><leader>d'
-
-let g:floaterm_gitcommit='floaterm'
-let g:floaterm_autoinsert=1
-let g:floaterm_width=0.8
-let g:floaterm_height=0.8
-let g:floaterm_wintitle=0
-let g:floaterm_autoclose=1
-" Open up gotop
-nnoremap <leader>fgt :FloatermNew gotop<CR>
+nmap <C-_> gcc
+vmap <C-_> gc
 
 
 " Close Tags
