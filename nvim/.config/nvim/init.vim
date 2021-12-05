@@ -23,9 +23,7 @@ set smartindent
 set backupskip=/tmp/*,/private/tmp/*
 
 " incremental substitution (neovim)
-if has('nvim')
-  set inccommand=split
-endif
+set inccommand=split
 
 " Suppress appending <PasteStart> and <PasteEnd> when pasting
 set t_BE=
@@ -39,8 +37,8 @@ set lazyredraw
 set ignorecase
 " Be smart when using tabs ;)
 set smarttab
-set shiftwidth=2
-set tabstop=2
+set shiftwidth=4
+set tabstop=4
 set ai "Auto indent
 set si "Smart indent
 set nowrap "No Wrap lines
@@ -57,20 +55,18 @@ set noswapfile
 call plug#begin('~/.vim/plugged')
     Plug 'hoob3rt/lualine.nvim'
     Plug 'sainnhe/everforest'
-    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-    Plug 'tpope/vim-markdown'
+    Plug 'iamcco/markdown-preview.nvim', { 'for':'markdown','do': 'cd app && yarn install'  }
+    Plug 'tpope/vim-markdown',{ 'for': 'markdown' }
     Plug 'kyazdani42/nvim-tree.lua'
-    Plug 'gko/vim-coloresque'
+    Plug 'norcalli/nvim-colorizer.lua',{'on':'ColorizerAttachToBuffer'}
     Plug 'windwp/nvim-autopairs'
     Plug 'windwp/nvim-ts-autotag'
     Plug 'romgrk/barbar.nvim'
-    Plug 'ryanoasis/vim-devicons'
     Plug 'kyazdani42/nvim-web-devicons'
     Plug 'nvim-lua/popup.nvim'
     Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim'
-    Plug 'kevinhwang91/rnvimr', {'do': 'make sync'}
-    Plug 'rbgrouleff/bclose.vim'
+    Plug 'kevinhwang91/rnvimr'
     Plug 'neovim/nvim-lspconfig'
     Plug 'williamboman/nvim-lsp-installer'
     Plug 'hrsh7th/cmp-nvim-lsp'
@@ -86,25 +82,22 @@ call plug#begin('~/.vim/plugged')
     Plug 'JoosepAlviste/nvim-ts-context-commentstring'
     Plug 'p00f/nvim-ts-rainbow'
     Plug 'tpope/vim-commentary'
-    Plug 'nvim-lua/plenary.nvim'
     Plug 'lewis6991/gitsigns.nvim'
     Plug 'akinsho/toggleterm.nvim'
     Plug 'alvan/vim-closetag'
     Plug 'tpope/vim-surround'
-    Plug 'SirVer/ultisnips'
-    Plug 'lambdalisue/suda.vim'
+    Plug 'lambdalisue/suda.vim',{'on':'SudaWrite'}
     Plug 'mattn/emmet-vim'
-    Plug 'mfussenegger/nvim-jdtls'
-    Plug 'RishabhRD/popfix'
-    Plug 'RishabhRD/nvim-lsputils'
+    Plug 'mfussenegger/nvim-jdtls',{ 'for': 'java' }
     " Plug 'github/copilot.vim'
+    Plug 'lukas-reineke/format.nvim'
     Plug 'kdheepak/lazygit.nvim'
-    Plug 'mhartington/formatter.nvim'
-    Plug 'junegunn/goyo.vim'
-    Plug 'junegunn/limelight.vim'
+    Plug 'junegunn/goyo.vim',{ 'for': 'markdown' }
+    Plug 'junegunn/limelight.vim',{ 'for': 'markdown' }
     Plug 'vimwiki/vimwiki'
-    Plug 'sedm0784/vim-you-autocorrect'
+    Plug 'sedm0784/vim-you-autocorrect',{ 'for': 'markdown' }
     Plug 'lukas-reineke/indent-blankline.nvim'
+    Plug 'lewis6991/impatient.nvim'
 call plug#end()
 
 syntax on
@@ -123,6 +116,7 @@ colorscheme everforest
 " Lua Configs
 
 lua << EOF
+require('impatient')
 local cmd = vim.cmd -- to execute Vim commands e.g. cmd('pwd')
 local fn = vim.fn -- to call Vim functions e.g. fn.bufnr()
 local g = vim.g -- a table to access global variables
@@ -228,7 +222,18 @@ require'nvim-treesitter.configs'.setup {
         "#c27556",
     },
   },
-  ensure_installed = "maintained",
+  ensure_installed = {
+    "lua",
+    "vim",
+    "go",
+    "css",
+    "java",
+    "json",
+    "html",
+    "scss",
+    "bash",
+    "python"
+  },
   context_commentstring = {
     enable = true
   },
@@ -293,36 +298,16 @@ require('gitsigns').setup{signs = {
     }}
 
 -- Prettier function for formatter
-function prettier()
-  return {
-    exe = 'prettierd',
-    args = {
-      '--config-precedence',
-      'prefer-file',
-      '--print-width',
-      vim.bo.textwidth,
-      '--stdin-filepath',
-      vim.fn.shellescape(vim.api.nvim_buf_get_name(0)),
-    },
-    stdin = true,
-  }
-end
-
-require("formatter").setup(
-  {
-    logging = false,
-    filetype = {
-      javascript = {prettier},
-      javascriptreact ={prettier},
-      typescript = {prettier},
-      vimwiki = {prettier},
-      html = {prettier},
-      css = {prettier},
-      scss = {prettier},
-      markdown = {prettier},
-    }
-  }
-)
+require'format'.setup {
+  html = {{cmd = {"prettier -w"}}},
+  css = {{cmd = {"prettier -w"}}},
+  scss = {{cmd = {"prettier -w"}}},
+  json = {{cmd = {"prettier -w"}}},
+  javascript = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
+  javascriptreact = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
+  typescript = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
+  typescriptreact = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
+}
 
 -- Runs Formatter on save
 vim.api.nvim_exec(
@@ -371,8 +356,8 @@ require("toggleterm").setup{
   shell = vim.o.shell,
   float_opts = {
     border = 'curved',
-    width = 90,
-    height = 25,
+    width = 95,
+    height = 27,
     winblend = 3,
     highlights = {
       border = "Normal",
@@ -424,7 +409,7 @@ let mapleader=" "
 
 " Find files using Telescope command-line sugar.
 nnoremap  <silent> ;f <cmd>lua require('telescope.builtin').find_files({find_command = { 'rg', '--files', '--hidden' } })<cr>
-nnoremap  <silent> ;r <cmd>lua require('telescope.builtin').live_grep({ vimgrep_arguments = { 'rg',  '--no-heading', '--with-filename', '--line-number', '--column', '--smart-case', '-u', '--hidden' } })<cr>
+nnoremap  <silent> ;r <cmd>lua require('telescope.builtin').live_grep()<cr>
 nnoremap <silent> \\ <cmd>Telescope buffers<cr>
 nnoremap <silent> ;; <cmd>Telescope help_tags<cr>
 
@@ -530,7 +515,7 @@ let g:lazygit_floating_window_scaling_factor = 0.9 " scaling factor for floating
 let g:lazygit_floating_window_corner_chars = ['╭', '╮', '╰', '╯'] " customize lazygit popup window corner characters
 let g:lazygit_floating_window_use_plenary = 0 " use plenary.nvim to manage floating window if available
 " setup mapping to call :LazyGit
-nnoremap <silent> <leader>gg :LazyGit<CR>
+nnoremap <silent> <leader>g :LazyGit<CR>
 
 " Note taking setup with vimwiki and markdown
 let g:vimwiki_list = [{'path': '~/vimwiki/',

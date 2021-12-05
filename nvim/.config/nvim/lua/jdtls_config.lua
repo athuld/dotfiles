@@ -1,9 +1,44 @@
 local M = {}
-function M.setup()
-  vim.cmd[[set softtabstop=4]]
-  vim.cmd[[set shiftwidth=4]]
-  vim.cmd[[set noexpandtab]]
-  require('jdtls').start_or_attach({cmd = {'java-lsp'}})
+
+local function ui_extension()
+  local finders = require "telescope.finders"
+  local sorters = require "telescope.sorters"
+  local actions = require "telescope.actions"
+  local pickers = require "telescope.pickers"
+  local action_state = require "telescope.actions.state"
+
+  require("jdtls.ui").pick_one_async = function(items, prompt, label_fn, cb)
+    local opts = {}
+    pickers.new(opts, {
+      prompt_title = prompt,
+      finder = finders.new_table {
+        results = items,
+        entry_maker = function(entry)
+          return {
+            value = entry,
+            display = label_fn(entry),
+            ordinal = label_fn(entry),
+          }
+        end,
+      },
+      sorter = sorters.get_generic_fuzzy_sorter(),
+      attach_mappings = function(prompt_bufnr)
+        actions.select_default:replace(function()
+          local selection = action_state.get_selected_entry(prompt_bufnr)
+
+          actions.close(prompt_bufnr)
+
+          cb(selection.value)
+        end)
+
+        return true
+      end,
+    }):find()
+  end
+end
+
+local on_attach = function(client, bufnr)
+
   -- Utility servers
   local map = function(type, key, value)
     vim.api.nvim_buf_set_keymap(0,type,key,value,{noremap = true, silent = true});
@@ -36,51 +71,22 @@ function M.setup()
   map('v', [[<leader>av]], [[<Esc><Cmd>lua require('jdtls').extract_variable(true)<CR>]])
   map('v', [[<leader>am]], [[<Esc><Cmd>lua require('jdtls').extract_method(true)<CR>]])
   map('n', [[<leader>aR]], [[<Cmd>lua require('jdtls').code_action(false, 'refactor')<CR>]])
-
-local jdtls_ui = require'jdtls.ui'
-function jdtls_ui.pick_one_async(items, _, _, cb)
-  require'lsputil.codeAction'.code_action_handler(nil, nil, items, nil, nil, nil, cb)
 end
-  vim.cmd[[command! -buffer JdtCompile lua require('jdtls').compile()]]
-  vim.cmd[[command! -buffer JdtUpdateConfig lua require('jdtls').update_project_config()]]
-  vim.cmd[[command! -buffer JdtJol lua require('jdtls').jol()]]
-  vim.cmd[[command! -buffer JdtBytecode lua require('jdtls').javap()]]
-  vim.cmd[[command! -buffer JdtJshell lua require('jdtls').jshell()]]
-vim.g.lsp_utils_location_opts = {
-    height = 24,
-    mode = 'split',
-    list = {
-	border = true,
-	numbering = true
-    },
-    preview = {
-	title = 'Location Preview',
-	border = true,
-    },
-}
 
+function M.setup()
+  ui_extension()
+	local config = {
+		cmd = {
+      'java-lsp',
+		},
+		capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities()),
+		-- init_options = {
+		-- 	bundles = { "/home/athul/.config/nvim/java/com.microsoft.java.debug.plugin-0.32.0.jar" };
+		-- },
+		on_attach = on_attach
+	}
 
-vim.g.lsp_utils_symbols_opts = {
-    height = 24,
-    mode = 'editor',
-    list = {
-	border = true,
-	numbering = false,
-    },
-    preview = {
-	title = 'Symbols Preview',
-	border = true,
-    },
-    prompt = {}
-}
-vim.lsp.handlers['textDocument/codeAction'] = require'lsputil.codeAction'.code_action_handler
-vim.lsp.handlers['textDocument/references'] = require'lsputil.locations'.references_handler
-vim.lsp.handlers['textDocument/definition'] = require'lsputil.locations'.definition_handler
-vim.lsp.handlers['textDocument/declaration'] = require'lsputil.locations'.declaration_handler
-vim.lsp.handlers['textDocument/typeDefinition'] = require'lsputil.locations'.typeDefinition_handler
-vim.lsp.handlers['textDocument/implementation'] = require'lsputil.locations'.implementation_handler
-vim.lsp.handlers['textDocument/documentSymbol'] = require'lsputil.symbols'.document_handler
-vim.lsp.handlers['workspace/symbol'] = require'lsputil.symbols'.workspace_handler
+	require('jdtls').start_or_attach(config)
 end
 
 return M
