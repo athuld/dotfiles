@@ -42,6 +42,10 @@ map('s', '<C-l>', '<Plug>(vsnip-expand-or-jump)', {silent = true})
 -- Format
 map('n', '<leader>f', ':FormatWrite<cr>', opts)
 
+-- REST
+map('n','<leader>r','<Plug>RestNvim',{silent = true})
+map('n','<leader>rt','<Plug>RestNvimPreview',{silent = true})
+
 -- Some general remaps
 
 -- To keep inline with D and C maps

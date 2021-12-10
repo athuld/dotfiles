@@ -268,7 +268,7 @@ _G.packer_plugins = {
     url = "https://github.com/kyazdani42/nvim-tree.lua"
   },
   ["nvim-treesitter"] = {
-    after = { "indent-blankline.nvim", "nvim-ts-autotag", "nvim-colorizer.lua", "nvim-ts-rainbow" },
+    after = { "indent-blankline.nvim", "nvim-ts-autotag", "nvim-ts-rainbow", "nvim-colorizer.lua" },
     loaded = true,
     only_config = true
   },
@@ -310,6 +310,14 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/athul/.local/share/nvim/site/pack/packer/start/popup.nvim",
     url = "https://github.com/nvim-lua/popup.nvim"
+  },
+  ["rest.nvim"] = {
+    config = { "require'configs.rest'" },
+    loaded = false,
+    needs_bufread = true,
+    only_cond = false,
+    path = "/home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim",
+    url = "https://github.com/NTBBloodbath/rest.nvim"
   },
   rnvimr = {
     commands = { "RnvimrToggle" },
@@ -406,7 +414,7 @@ _G.packer_plugins = {
 time([[Defining packer_plugins]], false)
 -- Setup for: vimwiki
 time([[Setup for vimwiki]], true)
-try_loadstring("\27LJ\1\2`\0\0\3\0\4\0\a4\0\0\0007\0\1\0002\1\3\0003\2\3\0;\2\1\1:\1\2\0G\0\1\0\1\0\3\bext\b.md\tpath\14~/vimwiki\vsyntax\rmarkdown\17vimwiki_list\6g\bvim\0", "setup", "vimwiki")
+try_loadstring("\27LJ\1\2`\0\0\3\0\4\0\a4\0\0\0007\0\1\0002\1\3\0003\2\3\0;\2\1\1:\1\2\0G\0\1\0\1\0\3\bext\b.md\vsyntax\rmarkdown\tpath\14~/vimwiki\17vimwiki_list\6g\bvim\0", "setup", "vimwiki")
 time([[Setup for vimwiki]], false)
 -- Config for: everforest
 time([[Config for everforest]], true)
@@ -436,11 +444,12 @@ vim.cmd [[au FileType html ++once lua require("packer.load")({'emmet-vim'}, { ft
 vim.cmd [[au FileType typescript ++once lua require("packer.load")({'emmet-vim'}, { ft = "typescript" }, _G.packer_plugins)]]
 vim.cmd [[au FileType scss ++once lua require("packer.load")({'emmet-vim'}, { ft = "scss" }, _G.packer_plugins)]]
 vim.cmd [[au FileType javascriptreact ++once lua require("packer.load")({'emmet-vim'}, { ft = "javascriptreact" }, _G.packer_plugins)]]
+vim.cmd [[au FileType markdown ++once lua require("packer.load")({'glow.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
 vim.cmd [[au FileType javascript ++once lua require("packer.load")({'emmet-vim'}, { ft = "javascript" }, _G.packer_plugins)]]
 vim.cmd [[au FileType css ++once lua require("packer.load")({'emmet-vim'}, { ft = "css" }, _G.packer_plugins)]]
-vim.cmd [[au FileType markdown ++once lua require("packer.load")({'glow.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
-vim.cmd [[au FileType typescriptreact ++once lua require("packer.load")({'emmet-vim'}, { ft = "typescriptreact" }, _G.packer_plugins)]]
 vim.cmd [[au FileType java ++once lua require("packer.load")({'nvim-jdtls'}, { ft = "java" }, _G.packer_plugins)]]
+vim.cmd [[au FileType typescriptreact ++once lua require("packer.load")({'emmet-vim'}, { ft = "typescriptreact" }, _G.packer_plugins)]]
+vim.cmd [[au FileType http ++once lua require("packer.load")({'rest.nvim'}, { ft = "http" }, _G.packer_plugins)]]
 vim.cmd [[au FileType jsx ++once lua require("packer.load")({'emmet-vim'}, { ft = "jsx" }, _G.packer_plugins)]]
 vim.cmd [[au FileType tsx ++once lua require("packer.load")({'emmet-vim'}, { ft = "tsx" }, _G.packer_plugins)]]
 time([[Defining lazy-load filetype autocommands]], false)
@@ -449,8 +458,13 @@ time([[Defining lazy-load event autocommands]], true)
 vim.cmd [[au BufWinEnter * ++once lua require("packer.load")({'nvim-tree.lua'}, { event = "BufWinEnter *" }, _G.packer_plugins)]]
 vim.cmd [[au VimEnter * ++once lua require("packer.load")({'packer.nvim'}, { event = "VimEnter *" }, _G.packer_plugins)]]
 vim.cmd [[au InsertEnter * ++once lua require("packer.load")({'emmet-vim', 'nvim-cmp', 'nvim-ts-autotag'}, { event = "InsertEnter *" }, _G.packer_plugins)]]
-vim.cmd [[au BufRead * ++once lua require("packer.load")({'surround.nvim', 'indent-blankline.nvim', 'toggleterm.nvim', 'suda.vim', 'gitsigns.nvim', 'bufferline.nvim', 'zen-mode.nvim', 'nvim-colorizer.lua', 'lualine.nvim', 'telescope.nvim', 'vimwiki', 'nvim-lspconfig', 'nvim-comment', 'nvim-ts-rainbow'}, { event = "BufRead *" }, _G.packer_plugins)]]
+vim.cmd [[au BufRead * ++once lua require("packer.load")({'surround.nvim', 'indent-blankline.nvim', 'toggleterm.nvim', 'suda.vim', 'gitsigns.nvim', 'bufferline.nvim', 'zen-mode.nvim', 'lualine.nvim', 'telescope.nvim', 'nvim-ts-rainbow', 'nvim-lspconfig', 'nvim-comment', 'vimwiki', 'nvim-colorizer.lua'}, { event = "BufRead *" }, _G.packer_plugins)]]
 time([[Defining lazy-load event autocommands]], false)
+vim.cmd("augroup END")
+vim.cmd [[augroup filetypedetect]]
+time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], true)
+vim.cmd [[source /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]]
+time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], false)
 vim.cmd("augroup END")
 if should_profile then save_profiles() end
 

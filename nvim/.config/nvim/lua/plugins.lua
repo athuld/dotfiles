@@ -244,6 +244,13 @@ return require('packer').startup({function()
         }
     end,}
 
+    use {
+    'NTBBloodbath/rest.nvim',
+    requires = { 'nvim-lua/plenary.nvim' },
+    ft="http",
+    config=[[require'configs.rest']]
+    }
+
 
 end,
   config = {

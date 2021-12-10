@@ -12,7 +12,8 @@ require'nvim-treesitter.configs'.setup {
     "python",
     "javascript",
     "tsx",
-    "typescript"
+    "typescript",
+    "http"
   },
   highlight = {
     enable = true,
