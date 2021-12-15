@@ -220,7 +220,7 @@ return require('packer').startup({function()
         requires = {
             'nvim-lua/plenary.nvim'
         },
-        config=[[require('gitsigns').setup()]]
+        config=[[require'configs.gitsigns']]
     }
 
     -- Markdown and vimwiki --
@@ -249,6 +249,19 @@ return require('packer').startup({function()
     requires = { 'nvim-lua/plenary.nvim' },
     ft="http",
     config=[[require'configs.rest']]
+    }
+
+
+    use {
+        'lervag/vimtex',
+        ft="tex",
+        event="BufRead",
+    }
+
+    use {
+        'Pocco81/AutoSave.nvim',
+        event="BufRead",
+        config=[[require'configs.autosave']]
     }
 
 

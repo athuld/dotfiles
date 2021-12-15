@@ -43,3 +43,7 @@ vim.g.did_load_filetypes = 1
 
 -- Glow
 vim.g.glow_binary_path = ".config/nvim/bin"
+
+-- Vimtex
+vim.g.vimtex_view_method = 'zathura'
+vim.g.maplocalleader = ";"

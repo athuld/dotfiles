@@ -20,6 +20,15 @@ require'format'.setup {
   javascript = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
   javascriptreact = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
   typescript = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
-  typescriptreact = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}}
+  typescriptreact = {{cmd = {"prettier -w", "./node_modules/.bin/eslint --fix"}}},
+  python = {
+    {
+      cmd = {
+        function(file)
+          return string.format('black --quiet %s', file)
+        end
+      }
+    }
+  },
 }
 
