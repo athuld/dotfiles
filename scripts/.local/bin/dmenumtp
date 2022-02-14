@@ -1,0 +1,61 @@
+#!/bin/bash
+# A dmenu script for mounting/unmounting MTP devices
+
+_mount() {
+	chosen=$(go-mtpfs -list | dmenu)
+
+	[[ -z "$chosen" ]] && exit 1
+
+	n=0
+	base_mount_point="$HOME/cell"
+
+	while ! mkdir "$base_mount_point$n"; do
+		n=$((n + 1))
+	done
+
+	device_serial=$(echo "${chosen##* }")
+
+	go-mtpfs -dev "$device_serial" "$base_mount_point$n" &
+	notify-send "MTP Mounting" "mounted at:${base_mount_point}${n}"
+}
+
+_unmount() {
+	chosen=$(mount | grep cell | cut -d ' ' -f 3 | dmenu)
+
+	fusermount -u "$chosen" && rmdir "$chosen"
+	if [ $? == 1 ]; then
+		notify-send --urgency="critical" "MTP Un-Mounting" "cannot unmount device"
+	else
+		notify-send "MTP Un-Mounting" "device unmounted"
+	fi
+}
+
+# Get list of MTP devices
+operation=$(printf "mount\nunmount" | dmenu)
+[ "$operation" == "mount" ] || [ "$operation" == "unmount" ] || exit 1
+
+devices=$(go-mtpfs -list 2>&1 | grep 'no MTP devices found')
+isMount=$(mount | grep 'cell')
+# Check if there are no devices
+echo $devices
+# Pick a device
+case $operation in
+"mount")
+	if [[ -z "$devices" ]]
+    then
+		_mount
+    else
+		notify-send "MTP Mounting" "No devices found"
+		exit 1
+	fi
+	;;
+"unmount")
+	if [[ -z "$isMount" ]]
+    then
+        notify-send "MTP Un-Mounting" "No devices to unmount"
+        exit 1
+    else
+        _unmount
+	fi
+	;;
+esac
