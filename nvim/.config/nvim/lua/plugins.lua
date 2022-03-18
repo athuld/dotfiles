@@ -76,13 +76,19 @@ return require('packer').startup({function()
    -- LSP --
     use {'neovim/nvim-lspconfig',
      event="BufRead",
-     config=[[require'configs.lspconfig']]
+     -- config=[[require'configs.lspconfig']]
     }
 
     use {
         'williamboman/nvim-lsp-installer',
         after="nvim-lspconfig",
         config=[[require'configs.lsp-installer']]
+    }
+
+    use {
+        'tami5/lspsaga.nvim',
+        after="nvim-lspconfig",
+        config=[[require'configs.lspsaga']]
     }
 
     -- Completions --
@@ -181,7 +187,7 @@ return require('packer').startup({function()
 
     -- Vim-Surround --
     use {
-        'blackCauldron7/surround.nvim',
+        'athuld/surround.nvim',
         event="BufRead",
         config=[[require'surround'.setup {mappings_style = "surround"}]]
     }

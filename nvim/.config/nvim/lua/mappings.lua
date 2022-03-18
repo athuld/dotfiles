@@ -68,6 +68,19 @@ map('i', '<C-k>', '<esc>:m .-2<CR>==', opts)
 map('n', '<leader>j', ':m .+1<CR>==', opts)
 map('n', '<leader>k', ':m .-2<CR>==', opts)
 
+
+-- LSP Saga
+--- In lsp attach function
+map("n", "<leader>r", "<cmd>Lspsaga rename<cr>", opts)
+map("n", "<leader>ca", "<cmd>Lspsaga code_action<cr>", opts)
+map("x", "gx", ":<c-u>Lspsaga range_code_action<cr>", opts)
+map("n", "K",  "<cmd>Lspsaga hover_doc<cr>", opts)
+map("n", "gd", "<cmd>Lspsaga show_line_diagnostics<cr>", opts)
+map("n", "gj", "<cmd>Lspsaga diagnostic_jump_next<cr>", opts)
+map("n", "gk", "<cmd>Lspsaga diagnostic_jump_prev<cr>", opts)
+map("n", "<C-u>", ":lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>",opts)
+map("n", "<C-d>", ":lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>",opts)
+
 -- -- since we lazy load packer.nvim, we need to load it when we run packer-related commands
 vim.cmd "silent! command PackerCompile lua require 'plugins' require('packer').compile()"
 vim.cmd "silent! command PackerInstall lua require 'plugins' require('packer').install()"
