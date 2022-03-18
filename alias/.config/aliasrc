@@ -1,7 +1,6 @@
 #!/bin/sh
 
 # Use neovim for vim if present.
-[ -x "$(command -v nvim)" ] && alias vim="nvim" vimdiff="nvim -d"
 
 # Verbose
 # Verbosity and settings that you pretty much just always are going to want.
@@ -9,10 +8,19 @@ alias \
 	cp="cp -iv" \
 	mv="mv -iv" \
 	rm="rm -vI" \
-	mkd="mkdir -pv" \
+	mkdir="mkdir -pv" \
 	jc="compile" \
-	z="zathura" \
-	lb="libreoffice"
+	za="devour zathura" \
+	lb="devour libreoffice" \
+    grep="grep --color" \
+    ls="lsd" \
+    ll="lsd -la" \
+    la="lsd -la" \
+    l="lsd -l" \
+    mpv="devour mpv" \
+    vlc="devour vlc" \
+    mu="devour mupdf" \
+    emacs="devour emacs"
 
 # shortcuts
 alias \
@@ -20,5 +28,15 @@ alias \
   D="cd ~/Documents" \
   p="cd ~/Pictures"
 
-# Dotfiles config
-alias config='/usr/bin/git --git-dir=$HOME/dotfiles/ --work-tree=$HOME'
+# Git
+alias \
+    gst="git status" \
+    grhh="git reset --hard" \
+    gcl="git clone"
+
+# Package manager
+alias \
+    xbi="sudo vpm i" \
+    xbr="sudo vpm rr" \
+    xbu="sudo vpm up" \
+    xbq="sudo vpm s"

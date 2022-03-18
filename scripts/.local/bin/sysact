@@ -3,8 +3,8 @@
 # A dmenu wrapper script for system functions.
 
 cmds="\
- reboot	${reb:-reboot}
- shutdown	${shut:-shutdown -h now}"
+ reboot	${reb:-sudo reboot}
+ shutdown	${shut:-sudo shutdown -h now}"
 
 choice="$(echo "$cmds" | cut -d'	' -f 1 | dmenu)" || exit 1
 

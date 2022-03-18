@@ -14,3 +14,6 @@ redshift -P -l 20.59:78.96 -t 5000:3200 &
 
 # Compositor
 picom --no-fading-openclose &
+
+# Numlock
+numlockx &
