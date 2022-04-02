@@ -29,7 +29,7 @@ return require('packer').startup({function()
     }
 
    -- Statusline : Lualine --
-    use {'hoob3rt/lualine.nvim',
+    use {'nvim-lualine/lualine.nvim',
         event="BufRead",
         requires ='kyazdani42/nvim-web-devicons',
         config=[[require'configs.lualine']]
@@ -137,8 +137,8 @@ return require('packer').startup({function()
 
     -- Format--
     use {
-        'lukas-reineke/format.nvim',
-        cmd="FormatWrite",
+        'mhartington/formatter.nvim',
+        cmd="Format",
         config=[[require'configs.format']]
     }
 

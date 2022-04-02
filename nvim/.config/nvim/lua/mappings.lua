@@ -22,11 +22,12 @@ map('n', '<C-p>', ':BufferLinePick<CR>', opts)
 -- Telescope
 map('n', ';f', ":lua require('telescope.builtin').find_files({hidden = true})<cr>", opts)
 map('n', ';g', ":lua require('telescope.builtin').live_grep()<cr>", opts)
+map('n', ';s', ":lua require('telescope.builtin').git_status()<cr>", opts)
 map('n', ';h', ":lua require('telescope.builtin').live_grep({prompt_title='Live Grep (hidden)', additional_args=function(opts) return {'--hidden'} end})<cr>", opts)
-map('n', '\\', ":lua require('telescope.builtin').buffers()<cr>", opts)
+map('n', '\\\\', ":lua require('telescope.builtin').buffers()<cr>", opts)
 map('n', ';;', ":lua require('telescope.builtin').help_tags()<cr>", opts)
 map('n', '<leader>p', ':Telescope neoclip<cr>', opts)
-map('n', ';z',":lua require'telescope'.extensions.zoxide.list{}<cr>",opts)
+map('n', ';z',":lua require'telescope'.extensions.zoxide.list({ initial_mode = 'normal' })<cr>",opts)
 -- Comment
 map('i', '<C-_>', 'gcc', {silent = true})
 map('n', '<C-_>', 'gcc', {silent = true})
@@ -40,7 +41,7 @@ map('i', '<C-l>', '<Plug>(vsnip-expand-or-jump)', {silent = true})
 map('s', '<C-l>', '<Plug>(vsnip-expand-or-jump)', {silent = true})
 
 -- Format
-map('n', '<leader>f', ':FormatWrite<cr>', opts)
+map('n', '<leader>f', ':Format<cr>', opts)
 
 -- REST
 map('n','<leader>r','<Plug>RestNvim',{silent = true})
