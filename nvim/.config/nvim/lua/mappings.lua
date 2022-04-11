@@ -28,6 +28,8 @@ map('n', '\\\\', ":lua require('telescope.builtin').buffers()<cr>", opts)
 map('n', ';;', ":lua require('telescope.builtin').help_tags()<cr>", opts)
 map('n', '<leader>p', ':Telescope neoclip<cr>', opts)
 map('n', ';z',":lua require'telescope'.extensions.zoxide.list({ initial_mode = 'normal' })<cr>",opts)
+map('n','<leader>o',":lua require('telescope.builtin').oldfiles()<cr>",opts)
+
 -- Comment
 map('i', '<C-_>', 'gcc', {silent = true})
 map('n', '<C-_>', 'gcc', {silent = true})
@@ -44,10 +46,16 @@ map('s', '<C-l>', '<Plug>(vsnip-expand-or-jump)', {silent = true})
 map('n', '<leader>f', ':Format<cr>', opts)
 
 -- REST
-map('n','<leader>r','<Plug>RestNvim',{silent = true})
-map('n','<leader>rt','<Plug>RestNvimPreview',{silent = true})
+map('n',';r','<Plug>RestNvim',{silent = true})
 
 -- Some general remaps
+
+-- New File
+map('n','<leader>c',':ene<cr>',opts)
+
+-- Resize window
+map('n','<leader>,',':vertical resize -5<cr>',opts)
+map('n','<leader>.',':vertical resize +5<cr>',opts)
 
 -- To keep inline with D and C maps
 map('n', 'Y', 'y$', opts)
@@ -81,6 +89,9 @@ map("n", "gj", "<cmd>Lspsaga diagnostic_jump_next<cr>", opts)
 map("n", "gk", "<cmd>Lspsaga diagnostic_jump_prev<cr>", opts)
 map("n", "<C-u>", ":lua require('lspsaga.action').smart_scroll_with_saga(-1)<cr>",opts)
 map("n", "<C-d>", ":lua require('lspsaga.action').smart_scroll_with_saga(1)<cr>",opts)
+
+-- For Java
+map("n", "<leader>=","<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 
 -- -- since we lazy load packer.nvim, we need to load it when we run packer-related commands
 vim.cmd "silent! command PackerCompile lua require 'plugins' require('packer').compile()"

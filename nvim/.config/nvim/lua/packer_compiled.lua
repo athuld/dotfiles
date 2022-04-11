@@ -77,6 +77,12 @@ _G.packer_plugins = {
     path = "/home/athul/.local/share/nvim/site/pack/packer/opt/AutoSave.nvim",
     url = "https://github.com/Pocco81/AutoSave.nvim"
   },
+  ["alpha-nvim"] = {
+    config = { "require'configs.alpha'" },
+    loaded = true,
+    path = "/home/athul/.local/share/nvim/site/pack/packer/start/alpha-nvim",
+    url = "https://github.com/goolord/alpha-nvim"
+  },
   ["bufferline.nvim"] = {
     config = { "require'configs.bufferline'" },
     loaded = false,
@@ -132,12 +138,6 @@ _G.packer_plugins = {
     only_cond = false,
     path = "/home/athul/.local/share/nvim/site/pack/packer/opt/emmet-vim",
     url = "https://github.com/mattn/emmet-vim"
-  },
-  everforest = {
-    config = { "require'colors'" },
-    loaded = true,
-    path = "/home/athul/.local/share/nvim/site/pack/packer/start/everforest",
-    url = "https://github.com/sainnhe/everforest"
   },
   ["filetype.nvim"] = {
     loaded = true,
@@ -209,6 +209,12 @@ _G.packer_plugins = {
     path = "/home/athul/.local/share/nvim/site/pack/packer/opt/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
   },
+  ["material.nvim"] = {
+    config = { "require'colors'" },
+    loaded = true,
+    path = "/home/athul/.local/share/nvim/site/pack/packer/start/material.nvim",
+    url = "https://github.com/marko-cerovac/material.nvim"
+  },
   ["nvim-autopairs"] = {
     config = { "require'configs.autopairs'" },
     load_after = {
@@ -220,7 +226,7 @@ _G.packer_plugins = {
     url = "https://github.com/windwp/nvim-autopairs"
   },
   ["nvim-cmp"] = {
-    after = { "lspkind-nvim", "vim-vsnip", "cmp-buffer", "nvim-autopairs", "cmp-nvim-lsp", "cmp-path", "cmp-vsnip" },
+    after = { "vim-vsnip", "cmp-buffer", "lspkind-nvim", "cmp-vsnip", "cmp-path", "cmp-nvim-lsp", "nvim-autopairs" },
     config = { "require'configs.nvim-cmp'" },
     loaded = false,
     needs_bufread = false,
@@ -245,14 +251,6 @@ _G.packer_plugins = {
     path = "/home/athul/.local/share/nvim/site/pack/packer/opt/nvim-comment",
     url = "https://github.com/terrortylor/nvim-comment"
   },
-  ["nvim-jdtls"] = {
-    config = { "require'configs.jdtls'.setup()" },
-    loaded = false,
-    needs_bufread = false,
-    only_cond = false,
-    path = "/home/athul/.local/share/nvim/site/pack/packer/opt/nvim-jdtls",
-    url = "https://github.com/mfussenegger/nvim-jdtls"
-  },
   ["nvim-lsp-installer"] = {
     config = { "require'configs.lsp-installer'" },
     load_after = {
@@ -264,7 +262,7 @@ _G.packer_plugins = {
     url = "https://github.com/williamboman/nvim-lsp-installer"
   },
   ["nvim-lspconfig"] = {
-    after = { "nvim-lsp-installer", "lspsaga.nvim" },
+    after = { "lspsaga.nvim", "nvim-lsp-installer" },
     loaded = false,
     needs_bufread = false,
     only_cond = false,
@@ -285,7 +283,7 @@ _G.packer_plugins = {
     url = "https://github.com/kyazdani42/nvim-tree.lua"
   },
   ["nvim-treesitter"] = {
-    after = { "indent-blankline.nvim", "nvim-colorizer.lua", "nvim-ts-rainbow", "nvim-ts-autotag" },
+    after = { "nvim-ts-rainbow", "indent-blankline.nvim", "nvim-colorizer.lua", "nvim-ts-autotag" },
     loaded = true,
     only_config = true
   },
@@ -334,7 +332,7 @@ _G.packer_plugins = {
     needs_bufread = true,
     only_cond = false,
     path = "/home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim",
-    url = "https://github.com/NTBBloodbath/rest.nvim"
+    url = "https://github.com/athuld/rest.nvim"
   },
   rnvimr = {
     commands = { "RnvimrToggle" },
@@ -376,10 +374,8 @@ _G.packer_plugins = {
   },
   ["telescope.nvim"] = {
     config = { "require'configs.telescope'" },
-    loaded = false,
-    needs_bufread = true,
-    only_cond = false,
-    path = "/home/athul/.local/share/nvim/site/pack/packer/opt/telescope.nvim",
+    loaded = true,
+    path = "/home/athul/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
   },
   ["toggleterm.nvim"] = {
@@ -438,16 +434,24 @@ _G.packer_plugins = {
 time([[Defining packer_plugins]], false)
 -- Setup for: vimwiki
 time([[Setup for vimwiki]], true)
-try_loadstring("\27LJ\2\n`\0\0\3\0\4\0\a6\0\0\0009\0\1\0004\1\3\0005\2\3\0>\2\1\1=\1\2\0K\0\1\0\1\0\3\vsyntax\rmarkdown\tpath\14~/vimwiki\bext\b.md\17vimwiki_list\6g\bvim\0", "setup", "vimwiki")
+try_loadstring("\27LJ\2\n`\0\0\3\0\4\0\a6\0\0\0009\0\1\0004\1\3\0005\2\3\0>\2\1\1=\1\2\0K\0\1\0\1\0\3\tpath\14~/vimwiki\bext\b.md\vsyntax\rmarkdown\17vimwiki_list\6g\bvim\0", "setup", "vimwiki")
 time([[Setup for vimwiki]], false)
+-- Config for: telescope.nvim
+time([[Config for telescope.nvim]], true)
+require'configs.telescope'
+time([[Config for telescope.nvim]], false)
+-- Config for: alpha-nvim
+time([[Config for alpha-nvim]], true)
+require'configs.alpha'
+time([[Config for alpha-nvim]], false)
+-- Config for: material.nvim
+time([[Config for material.nvim]], true)
+require'colors'
+time([[Config for material.nvim]], false)
 -- Config for: nvim-treesitter
 time([[Config for nvim-treesitter]], true)
 require'configs.treesitter'
 time([[Config for nvim-treesitter]], false)
--- Config for: everforest
-time([[Config for everforest]], true)
-require'colors'
-time([[Config for everforest]], false)
 
 -- Command lazy-loads
 time([[Defining lazy-load commands]], true)
@@ -464,32 +468,28 @@ vim.cmd [[augroup packer_load_aucmds]]
 vim.cmd [[au!]]
   -- Filetype lazy-loads
 time([[Defining lazy-load filetype autocommands]], true)
-vim.cmd [[au FileType css ++once lua require("packer.load")({'emmet-vim'}, { ft = "css" }, _G.packer_plugins)]]
-vim.cmd [[au FileType scss ++once lua require("packer.load")({'emmet-vim'}, { ft = "scss" }, _G.packer_plugins)]]
-vim.cmd [[au FileType http ++once lua require("packer.load")({'rest.nvim'}, { ft = "http" }, _G.packer_plugins)]]
-vim.cmd [[au FileType tex ++once lua require("packer.load")({'vimtex'}, { ft = "tex" }, _G.packer_plugins)]]
-vim.cmd [[au FileType javascript ++once lua require("packer.load")({'emmet-vim'}, { ft = "javascript" }, _G.packer_plugins)]]
-vim.cmd [[au FileType java ++once lua require("packer.load")({'nvim-jdtls'}, { ft = "java" }, _G.packer_plugins)]]
 vim.cmd [[au FileType markdown ++once lua require("packer.load")({'glow.nvim'}, { ft = "markdown" }, _G.packer_plugins)]]
+vim.cmd [[au FileType javascript ++once lua require("packer.load")({'emmet-vim'}, { ft = "javascript" }, _G.packer_plugins)]]
 vim.cmd [[au FileType javascriptreact ++once lua require("packer.load")({'emmet-vim'}, { ft = "javascriptreact" }, _G.packer_plugins)]]
 vim.cmd [[au FileType typescript ++once lua require("packer.load")({'emmet-vim'}, { ft = "typescript" }, _G.packer_plugins)]]
 vim.cmd [[au FileType typescriptreact ++once lua require("packer.load")({'emmet-vim'}, { ft = "typescriptreact" }, _G.packer_plugins)]]
 vim.cmd [[au FileType jsx ++once lua require("packer.load")({'emmet-vim'}, { ft = "jsx" }, _G.packer_plugins)]]
 vim.cmd [[au FileType tsx ++once lua require("packer.load")({'emmet-vim'}, { ft = "tsx" }, _G.packer_plugins)]]
 vim.cmd [[au FileType html ++once lua require("packer.load")({'emmet-vim'}, { ft = "html" }, _G.packer_plugins)]]
+vim.cmd [[au FileType css ++once lua require("packer.load")({'emmet-vim'}, { ft = "css" }, _G.packer_plugins)]]
+vim.cmd [[au FileType scss ++once lua require("packer.load")({'emmet-vim'}, { ft = "scss" }, _G.packer_plugins)]]
+vim.cmd [[au FileType http ++once lua require("packer.load")({'rest.nvim'}, { ft = "http" }, _G.packer_plugins)]]
+vim.cmd [[au FileType tex ++once lua require("packer.load")({'vimtex'}, { ft = "tex" }, _G.packer_plugins)]]
 time([[Defining lazy-load filetype autocommands]], false)
   -- Event lazy-loads
 time([[Defining lazy-load event autocommands]], true)
 vim.cmd [[au VimEnter * ++once lua require("packer.load")({'packer.nvim'}, { event = "VimEnter *" }, _G.packer_plugins)]]
+vim.cmd [[au BufWinEnter * ++once lua require("packer.load")({'nvim-tree.lua', 'bufferline.nvim'}, { event = "BufWinEnter *" }, _G.packer_plugins)]]
+vim.cmd [[au BufRead * ++once lua require("packer.load")({'nvim-ts-rainbow', 'indent-blankline.nvim', 'nvim-colorizer.lua', 'vimwiki', 'nvim-comment', 'vimtex', 'zen-mode.nvim', 'nvim-lspconfig', 'lualine.nvim', 'surround.nvim', 'AutoSave.nvim', 'suda.vim', 'toggleterm.nvim', 'gitsigns.nvim'}, { event = "BufRead *" }, _G.packer_plugins)]]
 vim.cmd [[au InsertEnter * ++once lua require("packer.load")({'emmet-vim', 'nvim-cmp', 'nvim-ts-autotag'}, { event = "InsertEnter *" }, _G.packer_plugins)]]
-vim.cmd [[au BufWinEnter * ++once lua require("packer.load")({'nvim-tree.lua'}, { event = "BufWinEnter *" }, _G.packer_plugins)]]
-vim.cmd [[au BufRead * ++once lua require("packer.load")({'zen-mode.nvim', 'nvim-lspconfig', 'suda.vim', 'surround.nvim', 'indent-blankline.nvim', 'telescope.nvim', 'lualine.nvim', 'toggleterm.nvim', 'nvim-colorizer.lua', 'vimtex', 'nvim-comment', 'bufferline.nvim', 'vimwiki', 'gitsigns.nvim', 'nvim-ts-rainbow', 'AutoSave.nvim'}, { event = "BufRead *" }, _G.packer_plugins)]]
 time([[Defining lazy-load event autocommands]], false)
 vim.cmd("augroup END")
 vim.cmd [[augroup filetypedetect]]
-time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], true)
-vim.cmd [[source /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]]
-time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], false)
 time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/cls.vim]], true)
 vim.cmd [[source /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/cls.vim]]
 time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/cls.vim]], false)
@@ -499,6 +499,9 @@ time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/pack
 time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/tikz.vim]], true)
 vim.cmd [[source /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/tikz.vim]]
 time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/vimtex/ftdetect/tikz.vim]], false)
+time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], true)
+vim.cmd [[source /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]]
+time([[Sourcing ftdetect script at: /home/athul/.local/share/nvim/site/pack/packer/opt/rest.nvim/ftdetect/http.vim]], false)
 vim.cmd("augroup END")
 if should_profile then save_profiles() end
 

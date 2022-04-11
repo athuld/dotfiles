@@ -23,8 +23,8 @@
         completeopt = 'menu,menuone,noinsert'
       },
     sources = {
-      { name = 'nvim_lsp' },
       { name = 'vsnip' },
+      { name = 'nvim_lsp' },
       { name = 'buffer',keyword_length=5 },
       { name = 'path'}
     },
