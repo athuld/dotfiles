@@ -24,7 +24,7 @@ return require('packer').startup({function()
 
    -- Colorscheme --
     use {
-        'sainnhe/everforest',
+        'marko-cerovac/material.nvim',
         config=[[require'colors']]
     }
 
@@ -76,7 +76,6 @@ return require('packer').startup({function()
    -- LSP --
     use {'neovim/nvim-lspconfig',
      event="BufRead",
-     -- config=[[require'configs.lspconfig']]
     }
 
     use {
@@ -128,13 +127,6 @@ return require('packer').startup({function()
         after="nvim-cmp"
     }
 
-    -- JDTLS for Java --
-    use {
-        'mfussenegger/nvim-jdtls',
-        ft="java",
-        config=[[require'configs.jdtls'.setup()]]
-    }
-
     -- Format--
     use {
         'mhartington/formatter.nvim',
@@ -145,15 +137,23 @@ return require('packer').startup({function()
     -- ToggleTerm --
     use {
         'akinsho/toggleterm.nvim',
+        tag = "*",
         event="BufRead",
         config=[[require'configs.toggleterm']]
     }
 
     -- Bufferline --
     use {'akinsho/bufferline.nvim',
+    tag = "*",
     requires = 'kyazdani42/nvim-web-devicons',
-    event="BufRead",
+    event="BufWinEnter",
     config=[[require'configs.bufferline']]
+    }
+
+   -- Startup Page --
+    use {
+        'goolord/alpha-nvim',
+        config=[[require'configs.alpha']]
     }
 
     -- Emmet --
@@ -167,7 +167,6 @@ return require('packer').startup({function()
     -- Telescope --
     use {
     'nvim-telescope/telescope.nvim',
-    event="BufRead",
     requires = {
     'nvim-lua/plenary.nvim',
     'nvim-lua/popup.nvim',
@@ -251,7 +250,7 @@ return require('packer').startup({function()
     end,}
 
     use {
-    'NTBBloodbath/rest.nvim',
+    'athuld/rest.nvim',
     requires = { 'nvim-lua/plenary.nvim' },
     ft="http",
     config=[[require'configs.rest']]
