@@ -17,3 +17,6 @@ picom --no-fading-openclose &
 
 # Numlock
 numlockx &
+
+# Play with mpv
+play-with-mpv &
