@@ -5,6 +5,6 @@ require("indent_blankline").setup {
   use_treesitter = true,
   show_trailing_blankline_indent = false,
   buftype_exclude = {"terminal"},
-  filetype_exclude = {"NvimTree", "lspinfo", "TelescopePrompt", "TelescopeResults", "lsp-installer", "packer"},
+  filetype_exclude = {"NvimTree", "lspinfo", "TelescopePrompt", "TelescopeResults", "mason", "packer"},
   char_highlight_list = {"IndentBlanklineIndent"}
 }

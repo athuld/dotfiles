@@ -10,8 +10,8 @@ local opts = {noremap = true, silent = true}
 map('n', '<leader>e', ':RnvimrToggle<CR>', opts)
 
 -- Nvim-Tree
+-- map("n", "<leader>n", ":NeoTreeRevealToggle<CR>", opts)
 map("n", "<leader>n", ":NvimTreeToggle<CR>", opts)
-map("n", "<leader>r", ":NvimTreeRefresh<CR>", opts)
 
 -- BufferLine
 map('n', '<S-tab>', ':BufferLineCyclePrev<CR>', opts)
@@ -56,6 +56,10 @@ map('n','<leader>c',':ene<cr>',opts)
 -- Resize window
 map('n','<leader>,',':vertical resize -5<cr>',opts)
 map('n','<leader>.',':vertical resize +5<cr>',opts)
+
+-- Splits
+map('n','<leader>v',':vsplit<cr>',opts)
+map('n','<leader>s','<C-w>w',opts)
 
 -- To keep inline with D and C maps
 map('n', 'Y', 'y$', opts)

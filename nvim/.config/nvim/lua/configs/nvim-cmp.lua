@@ -9,7 +9,7 @@
         vim.fn["vsnip#anonymous"](args.body)
       end,
     },
-    mapping = {
+    mapping =  cmp.mapping.preset.insert({
       ["<C-j>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
       ["<C-k>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
       ['<C-d>'] = cmp.mapping.scroll_docs(-4),
@@ -18,16 +18,16 @@
       ['<C-e>'] = cmp.mapping.close(),
       ['<C-y>'] = cmp.config.disable, -- If you want to remove the default `<C-y>` mapping, You can specify `cmp.config.disable` value.
       ['<CR>'] = cmp.mapping.confirm({select=true}),
-      },
+      }),
      completion = {
         completeopt = 'menu,menuone,noinsert'
       },
-    sources = {
+    sources = cmp.config.sources({
       { name = 'vsnip' },
       { name = 'nvim_lsp' },
       { name = 'buffer',keyword_length=5 },
       { name = 'path'}
-    },
+    }),
     experimental={
       native_menu=false,
       ghost_text= true,

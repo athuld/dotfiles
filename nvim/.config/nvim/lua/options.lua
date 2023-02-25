@@ -49,3 +49,6 @@ vim.g.glow_binary_path = ".config/nvim/bin"
 -- Vimtex
 vim.g.vimtex_view_method = 'zathura'
 vim.g.maplocalleader = ";"
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1

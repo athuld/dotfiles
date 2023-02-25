@@ -8,7 +8,7 @@ require("toggleterm").setup{
   persist_size = true,
   direction = 'float',
   close_on_exit = true,
-  shell = vim.o.shell,
+  shell = fish,
   float_opts = {
     border = 'curved',
     width = 95,
