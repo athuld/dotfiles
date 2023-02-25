@@ -1,15 +1,27 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
 
 
 [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/aliasrc" ] && source "${XDG_CONFIG_HOME:-$HOME/.config}/aliasrc"
 
 PATH="$HOME/.local/bin${PATH:+:${PATH}}"
 PATH="$HOME/go/bin${PATH:+:${PATH}}"
+PATH="$HOME/.cargo/bin${PATH:+:${PATH}}"
+
+SPACESHIP_DIR_TRUNC='6'
+SPACESHIP_PROMPT_ORDER=(
+  dir           # Current directory section
+  git
+  venv          # virtualenv section
+  exec_time     # Execution time
+  line_sep      # Line break
+  exit_code     # Exit code section
+  char          # Prompt character
+)
+fpath=( "${ZDOTDIR:-$HOME}/.zfunctions" $fpath )
+autoload -U promptinit; promptinit
+prompt spaceship
 
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
@@ -34,6 +46,8 @@ zle -N zle-line-init
 
 eval "$(zoxide init zsh)"
 
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+
 zstyle ':completion:*' menu select
 autoload -Uz compinit
 compinit
@@ -48,12 +62,10 @@ bindkey '^[[B' history-substring-search-down
 HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND=false
 HISTORY_SUBSTRING_SEARCH_FUZZY=false
 
-source ~/.powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-fm6000 -f ~/.ast.txt -c random -de="DWM" -n
+fm6000 -f ~/.pika.txt -c random -n
 
-if [ `tput colors` != "256" ]; then
-  exec bash -l;
-fi
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
