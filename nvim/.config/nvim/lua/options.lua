@@ -3,6 +3,7 @@ vim.opt.fileencodings = "utf-8"
 vim.opt.encoding = "utf-8"
 vim.opt.title = true
 vim.opt.autoindent = true
+vim.opt.autochdir = true
 vim.opt.background = "dark"
 vim.opt.backup = false
 vim.opt.hlsearch = false

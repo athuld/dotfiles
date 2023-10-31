@@ -19,7 +19,7 @@ vim.api.nvim_exec([[
   return "\<tab>"
   endfunction
 
-autocmd FileType html,css,scss,typescriptreact,vue,javascript,markdown.mdx imap <silent><buffer><expr><tab> <sid>expand_html_tab()
+autocmd FileType html,css,scss,typescriptreact,vue,svelte,javascript,markdown.mdx imap <silent><buffer><expr><tab> <sid>expand_html_tab()
 let g:user_emmet_mode='a'
 let g:user_emmet_complete_tag = 0
 let g:user_emmet_install_global = 0

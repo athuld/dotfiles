@@ -1,4 +1,5 @@
   local cmp = require'cmp'
+local lspkind = require('lspkind')
 
   cmp.setup({
   map_cr = true, --  map <CR> on insert mode
@@ -28,9 +29,11 @@
       { name = 'buffer',keyword_length=5 },
       { name = 'path'}
     }),
+    formatting = {
+        format = lspkind.cmp_format(),
+    },
     experimental={
       native_menu=false,
       ghost_text= true,
     }
   })
- 

@@ -4,5 +4,4 @@ end
 require('options')
 require('mappings')
 require('utils')
-require('plugins')
-require("packer_compiled")
+require('lazyInit')
