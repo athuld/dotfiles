@@ -1,13 +1,22 @@
 return {
     -- Colorscheme --
+    -- {
+    --     'marko-cerovac/material.nvim',
+    --     lazy = false,
+    --     priority = 1000,
+    --     config = function() require 'colors' end
+    -- },
     {
-        'marko-cerovac/material.nvim',
-        lazy = false,
-        priority = 1000,
-        config = function() require 'colors' end
+      "neanias/everforest-nvim",
+      version = false,
+      lazy = false,
+      priority = 1000,
+      config = function()
+        require("configs.everforest")
+      end,
     },
     -- Perfomance Plugins --
-    {'nathom/filetype.nvim'}, {'lewis6991/impatient.nvim'},
+    {'lewis6991/impatient.nvim'},
 
     {'tweekmonster/startuptime.vim', cmd = "StartupTime"},
 
@@ -19,6 +28,10 @@ return {
         config = function() require 'configs.lualine' end
     },
     -- File Managers --
+    {
+    "nvim-telescope/telescope-file-browser.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+    },
     {
         "nvim-neo-tree/neo-tree.nvim",
         branch = "v3.x",
@@ -32,7 +45,6 @@ return {
             require("configs.neotree")
         end
     },
-    {'kevinhwang91/rnvimr', cmd = "RnvimrToggle"},
 
     -- Treesitter and supporting configs { autotag, ts-rainbow, indent-blankline}, --
     {
@@ -40,9 +52,14 @@ return {
         dependencies = 'nvim-treesitter/nvim-treesitter-textobjects',
         config = function() require 'configs.treesitter' end
     },
-    {'p00f/nvim-ts-rainbow', event = "BufRead", lazy = true}, {
+    {'HiPhish/rainbow-delimiters.nvim',
+        event = "BufRead",
+        lazy = true,
+        config= function() require 'rainbow-delimiters.setup'.setup() end
+    }, 
+    {
         'windwp/nvim-ts-autotag',
-        event = "InsertEnter",
+        event = "BufReadPre",
         lazy = true,
         config = function() require'nvim-ts-autotag'.setup() end
     },
@@ -81,7 +98,11 @@ return {
             {'williamboman/mason.nvim'}, -- Optional
             {'williamboman/mason-lspconfig.nvim'}, -- Optional
             -- Snippets
-            {'L3MON4D3/LuaSnip'} -- Required
+            {
+                "L3MON4D3/LuaSnip",
+                version = "v2.*",
+                build = "make install_jsregexp"
+            }
         },
         config = function() require 'configs.lsp-installer' end
     },
@@ -219,10 +240,11 @@ return {
     },
     -- Vim-Surround --
     {
-        'athuld/surround.nvim',
-        event = "BufRead",
+        "kylechui/nvim-surround",
+        version = "*", -- Use for stability; omit to use `main` branch for the latest features
+        event = "VeryLazy",
         config = function()
-            require'surround'.setup {mappings_style = "surround"}
+            require("nvim-surround").setup({})
         end
     },
     -- Colorizer --

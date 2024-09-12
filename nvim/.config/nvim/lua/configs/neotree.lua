@@ -4,7 +4,6 @@ require("neo-tree").setup({
     popup_border_style = "rounded",
     enable_git_status = true,
     enable_diagnostics = true,
-    enable_normal_mode_for_inputs = false, -- Enable normal mode for input dialogs.
     open_files_do_not_replace_types = {"terminal", "trouble", "qf"}, -- when opening files, do not use windows containing these filetypes or buftypes
     sort_case_insensitive = false, -- used when sorting files and directories in the tree
     sort_function = nil, -- use a custom function for sorting files and directories in the tree 
@@ -15,6 +14,14 @@ require("neo-tree").setup({
           require("neo-tree.command").execute({ action = "close" })
         end
       },
+      {
+        event = "neo_tree_popup_input_ready",
+        ---@param args { bufnr: integer, winid: integer }
+        handler = function(args)
+          vim.cmd("stopinsert")
+          vim.keymap.set("i", "<esc>", vim.cmd.stopinsert, { noremap = true, buffer = args.bufnr })
+        end,
+      }
 
     },
     default_component_configs = {
@@ -165,7 +172,7 @@ require("neo-tree").setup({
                 -- ".gitignored",
             },
             never_show = { -- remains hidden even if visible is toggled to true, this overrides always_show
-                -- ".DS_Store",
+                "__pycache__",
                 -- "thumbs.db"
             },
             never_show_by_pattern = { -- uses glob style patterns

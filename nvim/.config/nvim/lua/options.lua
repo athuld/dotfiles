@@ -38,11 +38,11 @@ vim.opt.pumheight = 12
 vim.opt.showmode = false
 
 -- Ranger specific
-vim.g.rnvimr_ex_enable = 1
-vim.g.rnvimr_enable_picker = 1
+-- vim.g.rnvimr_ex_enable = 1
+-- vim.g.rnvimr_enable_picker = 1
 
 -- Do not source the default filetype.vim
-vim.g.did_load_filetypes = 1
+-- vim.g.did_load_filetypes = 1
 
 -- Glow
 vim.g.glow_binary_path = ".config/nvim/bin"

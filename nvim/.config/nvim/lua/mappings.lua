@@ -5,13 +5,7 @@ local map = vim.api.nvim_set_keymap
 local opts = {noremap = true, silent = true}
 
 -- Mappings
-
--- Ranger
-map('n', '<leader>e', ':RnvimrToggle<CR>', opts)
-
--- Nvim-Tree
--- map("n", "<leader>n", ":NeoTreeRevealToggle<CR>", opts)
--- map("n", "<leader>n", ":NvimTreeToggle<CR>", opts)
+-- NeoTree
 map("n", "<leader>n", ":Neotree toggle<CR>", opts)
 
 -- BufferLine
@@ -37,6 +31,7 @@ map('n', ';z',
     ":lua require'telescope'.extensions.zoxide.list({ initial_mode = 'normal' })<cr>",
     opts)
 map('n', '<leader>o', ":lua require('telescope.builtin').oldfiles()<cr>", opts)
+map('n', '<leader>e', ":lua require('telescope').extensions.file_browser.file_browser()<cr>", opts)
 
 -- Comment
 map('i', '<C-_>', 'gcc', {silent = true})
@@ -105,10 +100,3 @@ map("n", "<C-d>",
 
 -- For Java
 map("n", "<leader>=", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-
--- -- since we lazy load packer.nvim, we need to load it when we run packer-related commands
-vim.cmd "silent! command PackerCompile lua require 'plugins' require('packer').compile()"
-vim.cmd "silent! command PackerInstall lua require 'plugins' require('packer').install()"
-vim.cmd "silent! command PackerStatus lua require 'plugins' require('packer').status()"
-vim.cmd "silent! command PackerSync lua require 'plugins' require('packer').sync()"
-vim.cmd "silent! command PackerUpdate lua require 'plugins' require('packer').update()"

@@ -1,7 +1,7 @@
 require('lualine').setup {
   extensions = { 'neo-tree', 'toggleterm', 'lazy', 'mason'},
   options = {
-    theme = 'material',
+    theme = 'everforest',
     section_separators = { left = '', right = '' },
     component_separators = { left = '', right = '' },
     globalstatus = true,
