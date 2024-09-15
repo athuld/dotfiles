@@ -49,7 +49,8 @@ map('s', '<C-l>', '<Plug>(vsnip-expand-or-jump)', {silent = true})
 map('n', '<leader>f', ':Format<cr>', opts)
 
 -- REST
-map('n', ';r', '<Plug>RestNvim', {silent = true})
+map('n', ';r', ":Resty run<cr>", {silent = true})
+map('n', ';w', ":set invwrap<cr>", {silent = true})
 
 -- Some general remaps
 

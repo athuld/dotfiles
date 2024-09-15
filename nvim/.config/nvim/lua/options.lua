@@ -36,6 +36,7 @@ vim.opt.cursorline = true
 vim.opt.swapfile = false
 vim.opt.pumheight = 12
 vim.opt.showmode = false
+vim.opt.splitright = true
 
 -- Ranger specific
 -- vim.g.rnvimr_ex_enable = 1

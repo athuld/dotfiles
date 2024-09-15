@@ -265,11 +265,12 @@ return {
         config = function() require 'configs.gitsigns' end
     },
     -- Markdown and vimwiki --
-    {"ellisonleao/glow.nvim", lazy = true, ft = "markdown"}, {
-        'NTBBloodbath/rest.nvim',
-        dependencies = {'nvim-lua/plenary.nvim'},
-        ft = "http",
-        config = function() require 'configs.rest' end
+    {"ellisonleao/glow.nvim", config = true, cmd = "Glow"},
+    {
+      "lima1909/resty.nvim",
+      ft="http",
+      lazy=true,
+      dependencies = { "nvim-lua/plenary.nvim" },
     },
     {
         'Pocco81/auto-save.nvim',
