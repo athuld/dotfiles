@@ -1,20 +1,20 @@
 return {
     -- Colorscheme --
-    -- {
-    --     'marko-cerovac/material.nvim',
-    --     lazy = false,
-    --     priority = 1000,
-    --     config = function() require 'colors' end
-    -- },
     {
-      "neanias/everforest-nvim",
-      version = false,
-      lazy = false,
-      priority = 1000,
-      config = function()
-        require("configs.everforest")
-      end,
+        'marko-cerovac/material.nvim',
+        lazy = false,
+        priority = 1000,
+        config = function() require 'colors' end
     },
+    -- {
+    --   "neanias/everforest-nvim",
+    --   version = false,
+    --   lazy = false,
+    --   priority = 1000,
+    --   config = function()
+    --     require("configs.everforest")
+    --   end,
+    -- },
     -- Perfomance Plugins --
     {'lewis6991/impatient.nvim'},
 
@@ -72,61 +72,46 @@ return {
         config = function() require 'configs.indent' end
     },
     -- LSP --
-    {
-        "williamboman/mason.nvim",
-        lazy = true,
-        config = function()
-            require("mason").setup({
-                ui = {
-                    icons = {
-                        package_installed = "✓",
-                        package_pending = "➜",
-                        package_uninstalled = "✗"
-                    }
-                }
-            })
-        end
+{
+  {
+    'williamboman/mason.nvim',
+    lazy = false,
+    opts = {},
+  },
+
+  -- Autocompletion
+  {
+    'hrsh7th/nvim-cmp',
+    event = 'InsertEnter',
+    config = function() require 'configs.nvim-cmp' end
+  },
+
+  -- LSP
+  {
+    'neovim/nvim-lspconfig',
+    cmd = {'LspInfo', 'LspInstall', 'LspStart'},
+    event = {'BufReadPre', 'BufNewFile'},
+    dependencies = {
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'onsails/lspkind.nvim'},
+      {'williamboman/mason.nvim'},
+      {'williamboman/mason-lspconfig.nvim'},
     },
-    {
-        'VonHeikemen/lsp-zero.nvim',
-        branch = 'v3.x',
-        event = "BufRead",
-        lazy = true,
-        dependencies = {
-            -- LSP Support
-            {'neovim/nvim-lspconfig'}, -- Required
-            {'williamboman/mason.nvim'}, -- Optional
-            {'williamboman/mason-lspconfig.nvim'}, -- Optional
-            -- Snippets
-            {
-                "L3MON4D3/LuaSnip",
-                version = "v2.*",
-                build = "make install_jsregexp"
-            }
-        },
-        config = function() require 'configs.lsp-installer' end
-    },
+    init = function()
+      vim.opt.signcolumn = 'yes'
+    end,
+    config = function() require 'configs.lsp-installer' end
+  }
+},
     {
         'nvimdev/lspsaga.nvim',
-        event = "LspAttach",
-        config = function() require('lspsaga').setup({}) end
-    },
-    -- Go --
-    {
-        'ray-x/go.nvim',
-        dependencies = 'ray-x/guihua.lua',
-        ft = 'go',
-        config = function() require('go').setup() end
-    },
-    -- Completions --
-    {
-        'hrsh7th/nvim-cmp',
-        event = "InsertEnter",
+        config = function()
+            require('lspsaga').setup({})
+        end,
         dependencies = {
-            'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-buffer', 'hrsh7th/cmp-path',
-            'hrsh7th/cmp-vsnip', 'hrsh7th/vim-vsnip', 'onsails/lspkind.nvim'
-        },
-        config = function() require 'configs.nvim-cmp' end
+            'nvim-treesitter/nvim-treesitter',
+            'nvim-tree/nvim-web-devicons',
+        }
     },
     {
         'windwp/nvim-autopairs',
