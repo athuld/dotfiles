@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 COMP=$HOME/Downloads/Compressed
 OTH=$HOME/Downloads/Others
 VID=$HOME/Downloads/Videos
@@ -100,7 +100,7 @@ cleanup() {
 }
 
 choice() {
-	notify-send "Download Finished !!" --icon=/home/athul/.spotify-img/download.png
+	notify-send "Download Finished !!" --icon=/home/athul/.down/download.png
 	echo "Download another file?[Y/n]"
 	read ch
 	case $ch in

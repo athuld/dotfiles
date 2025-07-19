@@ -48,4 +48,4 @@ mp.observe_property('chapter', 'number', function(_, curr_chapter)
     list:update()
 end)
 
-mp.add_key_binding("TAB", "toggle-chapter-browser", function() list:toggle() end)
+mp.add_key_binding("CTRL+TAB", "toggle-chapter-browser", function() list:toggle() end)

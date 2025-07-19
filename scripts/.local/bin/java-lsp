@@ -10,10 +10,10 @@
 # JDTLS_HOME=/home/athul/.cache/nvim/jdtls
 # JAVA_VER=java-8-openjdk
 JDTLS_HOME=$HOME/.local/share/nvim/lsp_servers/jdtls
-JAVA_VER=java-11-openjdk
+JAVA_VER=openjdk11
 
 JAR="${JDTLS_HOME}/plugins/org.eclipse.equinox.launcher_*.jar"
-GRADLE_HOME=$HOME/gradle /usr/lib/jvm/$JAVA_VER/bin/java \
+GRADLE_HOME=/opt/gradle/gradle-7.4.2/bin/gradle /usr/lib/jvm/$JAVA_VER/bin/java \
   -Declipse.application=org.eclipse.jdt.ls.core.id1 \
   -Dosgi.bundles.defaultStartLevel=4 \
   -Declipse.product=org.eclipse.jdt.ls.core.product \
