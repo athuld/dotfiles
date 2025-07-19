@@ -267,6 +267,14 @@ return {
         config = function() require 'configs.gitsigns' end
     },
     -- Markdown and vimwiki --
+    {
+    "OXY2DEV/markview.nvim",
+    ft = "markdown",
+    dependencies = {
+        "nvim-treesitter/nvim-treesitter",
+        "nvim-tree/nvim-web-devicons"
+        }
+    },
     {"ellisonleao/glow.nvim", config = true, cmd = "Glow"},
     {
       "lima1909/resty.nvim",
